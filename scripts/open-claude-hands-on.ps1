@@ -5,7 +5,7 @@ $ErrorActionPreference = 'Stop'
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repositoryRoot = Split-Path -Parent $scriptRoot
 $guidePath = Join-Path $repositoryRoot 'docs\claude-hands-on.html'
-$appPath = Join-Path $repositoryRoot 'app\index.html'
+$appPath = Join-Path $repositoryRoot 'claude-demo\app\index.html'
 
 & (Join-Path $scriptRoot 'preflight-claude-hands-on.ps1') -SkipPackageCheck
 if ($LASTEXITCODE -ne 0) {

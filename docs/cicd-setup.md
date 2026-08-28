@@ -4,19 +4,19 @@
 
 一つのコミットについて、次の順序を体験する。
 
-1. ファイルと意図的な仕様不整合を自動検査し、配布物を固定する。
-2. 架空のステージング環境へ自動デプロイする。
+1. `claude-demo`のファイルと意図的な仕様不整合を自動検査し、配布物を固定する。
+2. テスト環境へ自動デプロイする。
 3. ステージングをブラウザ操作し、画面スクリーンショットを保存する。
 4. 人がステージングURLとスクリーンショットを確認する。
 5. GitHubの`production` Environmentで人が承認する。
-6. 承認された同一配布物を架空の本番環境へデプロイする。
+6. 承認された同一配布物を本番環境へデプロイする。
 
 ## 推奨構成
 
-- 公開GitHubリポジトリ一件。ダミー・公開情報だけを保存する。
+- 公開GitHubリポジトリ一件。
 - Cloudflare Pages Direct Uploadプロジェクト二件。
-  - 架空ステージング用
-  - 架空本番用
+  - テスト環境用
+  - 本番環境用
 - GitHub Environment二件。
   - `staging`: 自動実行。承認なし
   - `production`: Required reviewersを設定
@@ -36,7 +36,7 @@ Cloudflare PagesでDirect Uploadプロジェクトを二件作る。例示名は
 - `loan-hands-on-staging`
 - `loan-hands-on-production`
 
-実名、組織名または内部用途をプロジェクト名へ入れない。API Tokenは`Account / Cloudflare Pages / Edit`だけを付与する。Account IDとTokenはファイルやGitへ保存しない。
+API Tokenは`Account / Cloudflare Pages / Edit`だけを付与する。Account IDとTokenはファイルやGitへ保存しない。
 
 ## 3. GitHub Environments
 
@@ -54,7 +54,7 @@ Cloudflare PagesでDirect Uploadプロジェクトを二件作る。例示名は
 
 1. 変更をPull Requestで`main`へマージする。
 2. `Staging review and production approval`が起動する。
-3. 検証ジョブが生成した`release-app-<commit SHA>`を、ステージングと本番の共通配布物として固定する。
+3. 検証ジョブが`claude-demo/app`から生成した`release-app-<commit SHA>`を、テスト環境と本番環境の共通配布物として固定する。
 4. `capture-staging`完了後、ActionsのSummaryを開く。
 5. ステージングURLと`staging-screen-<commit SHA>`を確認する。
 6. 待機中の`production` Environmentを承認または拒否する。
@@ -66,7 +66,6 @@ Cloudflare PagesでDirect Uploadプロジェクトを二件作る。例示名は
 - GitHubは、承認者が実際にスクリーンショットを開いたことまでは強制しない。確認行為は人間の運用記録である。
 - Environment承認はGitHub上のゲートであり、Cloudflareアカウント全体の権限制御を代替しない。
 - ステージング用Tokenが本番プロジェクトも変更できる権限を持つ場合、Cloudflare側の技術的分離は不完全である。
-- この本番環境はハンズオン上の架空環境であり、実業務の可用性、監視、障害対応または本番統制を証明しない。
 
 ## 公式資料
 

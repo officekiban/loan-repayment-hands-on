@@ -1,16 +1,18 @@
 # AIエージェントを知る。
 
-**所要時間: 約30分**
+**所要時間: 約45分**
+
+Claude Codeには、参加者用の`claude-demo`フォルダだけを開いた状態で進める。
 
 ## 使用する環境
 
 | 環境 | 用途 | 場所 |
 | --- | --- | --- |
 | 開発環境 | Claude Codeが変更し、手元で動作確認する | `http://127.0.0.1:8765/app/` |
-| テスト環境 | 変更版を公開前に確認する | <https://loan-hands-on-staging.pages.dev/> |
-| 本番環境 | 完成版を公開する | <https://loan-hands-on-production.pages.dev/> |
+| テスト環境 | `main`への反映後、自動で変更版を確認する | <https://loan-hands-on-staging.pages.dev/> |
+| 本番環境 | テスト環境の確認と人の承認後に公開する | <https://loan-hands-on-production.pages.dev/> |
 
-開発環境は、このフォルダで次のコマンドを実行して起動する。
+開発環境は、`claude-demo`で次のコマンドを実行して起動する。
 
 ```powershell
 python -m http.server 8765 --bind 127.0.0.1
@@ -78,6 +80,52 @@ docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだフ
 - [ ] `app/index.html`が再生成された
 - [ ] `npm run check`が成功した
 
-## 3. 終了（3分）
+## 3. Gitでテスト環境・本番環境へ反映する（15分）
 
-Claudeの最終報告で、基本設計書、テスト仕様書兼成績書、編集元画面、生成後画面の変更と検証結果を確認して終了する。
+次のプロンプトをClaude Codeへ貼り付ける。
+
+```text
+ここまでの変更をGitで共有できる状態にしてください。
+
+1. git statusとgit diffで変更内容を確認する
+2. 現在の変更を保持したまま、hands-on/repayment-years-30-日時 という新しいブランチを作る
+3. このclaude-demoフォルダ内の変更だけをステージする
+4. 変更内容が分かるメッセージでコミットする
+5. git push -u origin HEADでGitHubへ送る
+
+mainへのマージは行わず、実行したコマンド、コミットID、Pull Requestを作るためのURLを報告してください。
+```
+
+### Pull Requestから本番反映まで
+
+1. Claudeが示したURLからPull Requestを作る。
+2. 自動検証が成功したことを確認して`main`へマージする。
+3. GitHub Actionsの`Staging review and production approval`を開く。
+4. テスト環境のURLと画面キャプチャを確認する。
+5. `production`の承認待ちで、確認した人が承認する。
+6. 本番環境への反映成功と画面を確認する。
+
+### 反映確認
+
+- [ ] Pull Requestに、設計・テスト・画面の変更だけが含まれている
+- [ ] 自動検証が成功し、`main`へマージされた
+- [ ] テスト環境で返済年数上限が30年になっている
+- [ ] 人がテスト環境を確認して本番反映を承認した
+- [ ] 本番環境で返済年数上限が30年になっている
+
+## 次の参加者のために初期状態へ戻す（運営者）
+
+本番反映まで終わったら、リポジトリのルートで実行する。
+
+```powershell
+git switch main
+git pull --ff-only origin main
+.\scripts\reset-hands-on.ps1
+$stamp = Get-Date -Format 'yyyyMMdd-HHmm'
+git switch -c "reset/restore-initial-state-$stamp"
+git add claude-demo
+git commit -m "Reset hands-on workspace to initial state"
+git push -u origin HEAD
+```
+
+このリセット用ブランチもPull Requestで`main`へマージし、同じ流れでテスト環境を確認して本番反映を承認する。開発・テスト・本番のすべてが「返済年数上限100年、レビュー前のテスト仕様書」の状態へ戻り、次の参加者が最初から開始できる。

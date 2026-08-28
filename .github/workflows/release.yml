@@ -26,13 +26,17 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
+      - name: Install Claude demo workspace
+        run: npm --prefix claude-demo ci
       - name: Validate files and intentional specification gap
         run: npm run check
+      - name: Validate the deployable Claude demo
+        run: npm --prefix claude-demo run check
       - name: Freeze the deployable app for both environments
         uses: actions/upload-artifact@v5
         with:
           name: release-app-${{ github.sha }}
-          path: app
+          path: claude-demo/app
           if-no-files-found: error
           retention-days: 14
 

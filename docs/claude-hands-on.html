@@ -70,7 +70,7 @@
 
     .route {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
       gap: 14px;
       align-items: center;
       margin-top: 28px;
@@ -209,6 +209,35 @@
 
     .answer strong { color: #005a93; }
 
+    .workspace-note {
+      margin-top: 18px;
+      padding: 13px 16px;
+      color: var(--green-deep);
+      background: var(--green-pale);
+      border-left: 4px solid var(--green);
+      font-weight: 700;
+    }
+
+    .deploy-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .deploy-flow div {
+      padding: 13px;
+      background: #fbfcf8;
+      border: 1px solid #e0e4da;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .deploy-flow strong { display: block; color: var(--green-deep); }
+
+    .steps { margin: 14px 0 0; padding-left: 22px; }
+    .steps li { margin: 7px 0; }
+
     .finish {
       display: flex;
       justify-content: space-between;
@@ -233,6 +262,7 @@
       .progress { grid-template-columns: 1fr auto; }
       .track { grid-column: 1 / -1; grid-row: 2; }
       .environment-grid { grid-template-columns: 1fr; }
+      .deploy-flow { grid-template-columns: 1fr; }
       .prompt pre { padding: 36px 0 0; font-size: 12px; }
       .finish { align-items: flex-start; flex-direction: column; }
     }
@@ -243,11 +273,13 @@
     <header class="hero">
       <p class="eyebrow">CLAUDE CODE HANDS-ON</p>
       <h1>AIエージェントを知る。</h1>
-      <p class="lead">テスト仕様書のレビューと小さな仕様変更を通して、Claude Codeとの仕事の進め方を体験します。約30分です。</p>
+      <p class="lead">レビュー、仕様変更、Git、本番反映まで、Claude Codeとの仕事の進め方を体験します。約45分です。</p>
       <div class="route" aria-label="進行">
         <div><strong>01 テストレビュー</strong><small>矛盾とテスト漏れを確認</small></div>
         <span class="route-arrow" aria-hidden="true">→</span>
-        <div><strong>02 仕様変更</strong><small>100年上限を30年へ変更</small></div>
+        <div><strong>02 仕様変更</strong><small>上限を30年へ</small></div>
+        <span class="route-arrow" aria-hidden="true">→</span>
+        <div><strong>03 Git・本番反映</strong><small>PR・確認・承認</small></div>
       </div>
     </header>
 
@@ -261,10 +293,11 @@
       <section class="card">
         <p class="step">ENVIRONMENTS</p>
         <h2>3つの環境</h2>
+        <div class="workspace-note">Claude Codeには、参加者用の <code>claude-demo</code> フォルダだけを開きます。</div>
         <div class="environment-grid">
           <div class="environment"><strong>開発環境</strong><span>Claude Codeが変更し、手元で確認</span><a href="http://127.0.0.1:8765/app/">127.0.0.1:8765/app/</a></div>
-          <div class="environment"><strong>テスト環境</strong><span>変更版を公開前に確認</span><a href="https://loan-hands-on-staging.pages.dev/">loan-hands-on-staging.pages.dev</a></div>
-          <div class="environment"><strong>本番環境</strong><span>完成版を公開</span><a href="https://loan-hands-on-production.pages.dev/">loan-hands-on-production.pages.dev</a></div>
+          <div class="environment"><strong>テスト環境</strong><span>main反映後に自動配置</span><a href="https://loan-hands-on-staging.pages.dev/">loan-hands-on-staging.pages.dev</a></div>
+          <div class="environment"><strong>本番環境</strong><span>テスト確認と人の承認後に配置</span><a href="https://loan-hands-on-production.pages.dev/">loan-hands-on-production.pages.dev</a></div>
         </div>
         <h3>開発環境を起動</h3>
         <div class="command">python -m http.server 8765 --bind 127.0.0.1</div>
@@ -328,10 +361,65 @@ docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだフ
         </div>
       </section>
 
+      <section class="card">
+        <p class="step">03 · 15 MIN</p>
+        <h2>Gitでテスト環境・本番環境へ反映</h2>
+        <p class="time">変更をコミットして送るところまでClaude Codeに任せ、マージと本番承認は人が行います。</p>
+        <div class="prompt"><button class="copy" type="button">コピー</button><pre>ここまでの変更をGitで共有できる状態にしてください。
+
+1. git statusとgit diffで変更内容を確認する
+2. 現在の変更を保持したまま、hands-on/repayment-years-30-日時 という新しいブランチを作る
+3. このclaude-demoフォルダ内の変更だけをステージする
+4. 変更内容が分かるメッセージでコミットする
+5. git push -u origin HEADでGitHubへ送る
+
+mainへのマージは行わず、実行したコマンド、コミットID、Pull Requestを作るためのURLを報告してください。</pre></div>
+
+        <div class="deploy-flow" aria-label="デプロイの流れ">
+          <div><strong>Pull Request</strong>自動検証後にmainへマージ</div>
+          <div><strong>テスト環境</strong>URLと画面キャプチャを確認</div>
+          <div><strong>本番環境</strong>人が承認して同じ成果物を反映</div>
+        </div>
+
+        <h3>Pull Requestから本番反映まで</h3>
+        <ol class="steps">
+          <li>Claudeが示したURLからPull Requestを作る。</li>
+          <li>自動検証の成功を確認して<code>main</code>へマージする。</li>
+          <li>GitHub Actionsの<code>Staging review and production approval</code>を開く。</li>
+          <li>テスト環境のURLと画面キャプチャを確認する。</li>
+          <li><code>production</code>の承認待ちで、確認した人が承認する。</li>
+          <li>本番環境への反映成功と画面を確認する。</li>
+        </ol>
+
+        <h3>反映確認</h3>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="deploy-1"><span>Pull Requestに設計・テスト・画面の変更だけが含まれている</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-2"><span>自動検証が成功し、<code>main</code>へマージされた</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-3"><span>テスト環境で返済年数上限が30年になっている</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-4"><span>人がテスト環境を確認して本番反映を承認した</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-5"><span>本番環境で返済年数上限が30年になっている</span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="step">RESET · FOR NEXT PERSON</p>
+        <h2>初期状態へ戻す</h2>
+        <p>本番反映後、運営者がリポジトリのルートで実行します。</p>
+        <div class="command">git switch main
+git pull --ff-only origin main
+.\scripts\reset-hands-on.ps1
+$stamp = Get-Date -Format 'yyyyMMdd-HHmm'
+git switch -c "reset/restore-initial-state-$stamp"
+git add claude-demo
+git commit -m "Reset hands-on workspace to initial state"
+git push -u origin HEAD</div>
+        <div class="answer"><strong>環境も戻す</strong><br>リセット用Pull Requestをmainへマージし、テスト環境の確認と本番承認まで行います。3環境すべてが100年上限の開始状態へ戻ります。</div>
+      </section>
+
       <section class="card finish">
         <div>
-          <p class="step">FINISH · 3 MIN</p>
-          <h2>変更した4成果物と検証結果を確認して終了</h2>
+          <p class="step">FINISH</p>
+          <h2>次の参加者も同じ初期状態から始められます</h2>
         </div>
         <button class="reset" id="reset-progress" type="button">チェックをリセット</button>
       </section>
@@ -342,7 +430,7 @@ docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだフ
 
   <script>
     (() => {
-      const key = 'loan-hands-on-simple-progress-v1';
+      const key = 'loan-hands-on-simple-progress-v2';
       const boxes = [...document.querySelectorAll('[data-progress]')];
       const fill = document.getElementById('progress-fill');
       const count = document.getElementById('progress-count');

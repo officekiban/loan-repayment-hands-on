@@ -1,11 +1,20 @@
 # Claude Code ハンズオン運営メモ
 
+## 開始前
+
+1. `scripts/reset-hands-on.ps1`を実行し、`claude-demo`を100年上限の初期状態へ戻す。
+2. `claude-demo`で`npm run check`が成功することを確認する。
+3. Claude Codeには`claude-demo`だけを開く。答え合わせや運営資料を含むリポジトリのルートは開かない。
+4. 手順書`docs/claude-hands-on.html`と開発環境をブラウザで開く。
+
 ## 進行
 
 1. 参加者が`docs/test-spec.md`をClaude Codeへレビューさせる。
 2. Claudeの指摘を`docs/claude-hands-on.md`の答え合わせと照合する。
 3. 返済年数上限を100年から30年へ変更させる。
 4. 設計、テスト仕様書兼成績書、編集元HTML、生成HTMLが同じ変更になったことを確認する。
+5. 参加者が変更をブランチへコミットしてGitHubへ送る。
+6. Pull Request、自動検証、テスト環境、本番承認、本番環境の順に確認する。
 
 ## レビューで必ず出したい4点
 
@@ -48,3 +57,12 @@
 - `npm run check`が成功する。
 
 利息端数処理は変更対象に含めない。
+
+## 終了後の復元
+
+1. 参加者のPull Requestを`main`へマージし、テスト環境と本番環境への反映を完了する。
+2. ローカルの`main`を最新化し、`scripts/reset-hands-on.ps1`を実行する。
+3. `claude-demo`の復元差分だけを別ブランチへコミットする。
+4. リセット用Pull Requestを`main`へマージする。
+5. テスト環境を確認し、本番反映を承認する。
+6. 開発・テスト・本番が100年上限へ戻ったことを確認する。

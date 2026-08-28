@@ -19,6 +19,18 @@ const requiredFiles = [
   'scripts/build-standalone.mjs',
   'scripts/open-claude-hands-on.ps1',
   'scripts/preflight-claude-hands-on.ps1',
+  'scripts/reset-hands-on.ps1',
+  'claude-demo/CLAUDE.md',
+  'claude-demo/app/index.html',
+  'claude-demo/app/loan-repayment-simulator.html',
+  'claude-demo/docs/basic-design.md',
+  'claude-demo/docs/test-spec.md',
+  'claude-demo/scripts/build-standalone.mjs',
+  'claude-demo/scripts/validate-demo.mjs',
+  '.hands-on-baseline/app/index.html',
+  '.hands-on-baseline/app/loan-repayment-simulator.html',
+  '.hands-on-baseline/docs/basic-design.md',
+  '.hands-on-baseline/docs/test-spec.md',
   '.github/workflows/release.yml'
 ];
 
@@ -52,6 +64,8 @@ const claudeInstructions = await read('CLAUDE.md');
 const handsOnGuide = await read('docs/claude-hands-on.md');
 const handsOnHtml = await read('docs/claude-hands-on.html');
 const workflow = parseYaml(await read('.github/workflows/release.yml'));
+const demoFiles = (await walk(path.join(packageRoot, 'claude-demo')))
+  .map((file) => path.relative(path.join(packageRoot, 'claude-demo'), file).replaceAll('\\', '/'));
 
 if (!app.includes(expectedVersion)) throw new Error(`App does not display ${expectedVersion}.`);
 if (!app.includes('元金据置期間')) throw new Error('Grace-period input is missing.');
@@ -79,8 +93,14 @@ if (!claudeInstructions.includes('Do not resolve the existing interest-rounding 
     !claudeInstructions.includes('npm run check')) {
   throw new Error('Claude review and validation instructions are missing.');
 }
-if (!handsOnGuide.includes('所要時間: 約30分') || !handsOnGuide.includes('返済年数の上限を100年から30年')) {
+if (!handsOnGuide.includes('所要時間: 約45分') || !handsOnGuide.includes('返済年数の上限を100年から30年')) {
   throw new Error('The simplified review and specification-change flow is missing.');
+}
+if (demoFiles.some((file) => file.includes('operator-story') || file.includes('claude-hands-on'))) {
+  throw new Error('The Claude demo workspace contains facilitator or answer-key material.');
+}
+if (!handsOnGuide.includes('git push -u origin HEAD') || !handsOnGuide.includes('reset-hands-on.ps1')) {
+  throw new Error('The Git deployment and reset flow is missing from the participant guide.');
 }
 if (!handsOnHtml.includes('data-progress') || !handsOnHtml.includes('localStorage')) {
   throw new Error('Interactive hands-on progress tracking is missing.');
@@ -93,7 +113,8 @@ if (workflow.jobs['deploy-production'].needs !== 'capture-staging') {
 }
 const workflowText = await read('.github/workflows/release.yml');
 if (!workflowText.includes('release-app-${{ github.sha }}') ||
-    !workflowText.includes('Download the exact app reviewed in staging')) {
+    !workflowText.includes('Download the exact app reviewed in staging') ||
+    !workflowText.includes('path: claude-demo/app')) {
   throw new Error('Staging and production must deploy the same frozen artifact.');
 }
 

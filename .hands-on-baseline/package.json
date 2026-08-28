@@ -1,0 +1,10 @@
+{
+  "name": "loan-repayment-claude-demo",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-standalone.mjs",
+    "check": "npm run build && node scripts/validate-demo.mjs"
+  }
+}

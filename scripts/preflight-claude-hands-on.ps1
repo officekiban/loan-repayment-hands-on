@@ -44,11 +44,14 @@ if ($failures.Count -eq 0) {
 
 $requiredFiles = @(
   'CLAUDE.md',
-  'docs/basic-design.md',
-  'docs/test-spec.md',
+  'claude-demo/CLAUDE.md',
+  'claude-demo/docs/basic-design.md',
+  'claude-demo/docs/test-spec.md',
   'docs/claude-hands-on.md',
   'docs/claude-hands-on.html',
-  'app/loan-repayment-simulator.html'
+  'claude-demo/app/loan-repayment-simulator.html',
+  '.hands-on-baseline/app/loan-repayment-simulator.html',
+  'scripts/reset-hands-on.ps1'
 )
 
 foreach ($relativePath in $requiredFiles) {
@@ -66,6 +69,11 @@ if (-not $SkipPackageCheck -and $failures.Count -eq 0) {
     Write-Host 'Running package check...' -ForegroundColor Cyan
     npm run check
     Write-Check -Label 'Package validation' -Passed ($LASTEXITCODE -eq 0) -Detail 'npm run check'
+
+    if ($LASTEXITCODE -eq 0) {
+      npm --prefix claude-demo run check
+      Write-Check -Label 'Claude demo validation' -Passed ($LASTEXITCODE -eq 0) -Detail 'npm --prefix claude-demo run check'
+    }
   }
 }
 
