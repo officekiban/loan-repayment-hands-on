@@ -13,11 +13,11 @@ const standalone = `<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
   <title>返済シミュレータ</title>
   <style>
-    html { color-scheme: light dark; }
-    body { margin: 0; padding: 16px; background: light-dark(#f4f7fb, #10141b); }
+    html { color-scheme: light; }
+    body { margin: 0; padding: 16px; background: #f5f1d7; }
   </style>
 </head>
 <body>

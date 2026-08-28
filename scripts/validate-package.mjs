@@ -58,6 +58,12 @@ const workflow = parseYaml(await read('.github/workflows/release.yml'));
 if (!app.includes(expectedVersion)) throw new Error(`App does not display ${expectedVersion}.`);
 if (!app.includes('元金据置期間')) throw new Error('Grace-period input is missing.');
 if (!app.includes('元利均等') || !app.includes('元金均等')) throw new Error('Repayment methods are missing.');
+if (!app.includes('返済予定表') || !app.includes('loan-schedule-body') || !app.includes('PAGE_SIZE = 12')) {
+  throw new Error('Repayment schedule or its 12-row pagination is missing.');
+}
+if (!app.includes('#1c5a00') || !app.includes('#2f8608') || !app.includes('#f5f1d7')) {
+  throw new Error('The public-service-inspired color palette is missing.');
+}
 if (!basicDesign.includes('BD-RND-01') || !basicDesign.includes('1円未満を切り捨てる')) {
   throw new Error('Basic-design interest rounding rule is missing.');
 }
@@ -66,6 +72,9 @@ if (!basicDesign.includes('BD-RND-02') || !basicDesign.includes('最終月に調
 }
 if (!testSpec.includes('TS-05') || !testSpec.includes('四捨五入')) {
   throw new Error('Test-spec rounding expectation is missing.');
+}
+if (!testSpec.includes('TS-08') || !testSpec.includes('最終行の返済後残高が0円')) {
+  throw new Error('Repayment-schedule test coverage is missing.');
 }
 if (!operatorStory.includes('人間判断')) throw new Error('Human-decision handoff is missing.');
 if (!claudeInstructions.includes('do not guess') || !claudeInstructions.includes('human')) {
