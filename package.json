@@ -1,0 +1,15 @@
+{
+  "name": "loan-repayment-hands-on",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-standalone.mjs",
+    "check": "npm run build && node scripts/validate-package.mjs",
+    "capture:staging": "node scripts/capture-staging.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1",
+    "yaml": "2.9.0"
+  }
+}

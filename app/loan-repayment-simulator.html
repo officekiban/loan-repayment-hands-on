@@ -1,0 +1,476 @@
+<section id="loan-repayment-simulator" aria-label="返済シミュレータ">
+  <style>
+    #loan-repayment-simulator {
+      color-scheme: light dark;
+      --loan-bg: light-dark(#f3f6fa, #10151d);
+      --loan-surface: light-dark(#ffffff, #19212c);
+      --loan-surface-strong: light-dark(#e8eef7, #222d3b);
+      --loan-text: light-dark(#162033, #f4f7fb);
+      --loan-muted: light-dark(#596579, #aeb9c8);
+      --loan-border: light-dark(#cfd8e5, #3a4657);
+      --loan-action: light-dark(#1e4f91, #8ab4f8);
+      --loan-action-text: light-dark(#ffffff, #0c1a2d);
+      --loan-focus: light-dark(#2d6ec7, #9dc2ff);
+      width: 100%;
+      color: var(--loan-text);
+      font-family: "Segoe UI", "Yu Gothic UI", sans-serif;
+    }
+
+    #loan-repayment-simulator * {
+      box-sizing: border-box;
+    }
+
+    #loan-repayment-simulator .loan-app {
+      width: 100%;
+      overflow: hidden;
+      background: var(--loan-bg);
+      border: 1px solid var(--loan-border);
+      border-radius: 18px;
+    }
+
+    #loan-repayment-simulator .loan-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px 28px;
+      background: var(--loan-surface);
+      border-bottom: 1px solid var(--loan-border);
+    }
+
+    #loan-repayment-simulator .loan-title {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 38px);
+      line-height: 1.15;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    #loan-repayment-simulator .loan-version {
+      margin: 0;
+      color: var(--loan-action);
+      font-size: clamp(36px, 8vw, 64px);
+      line-height: 0.9;
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    #loan-repayment-simulator .loan-main {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: 22px;
+      padding: 24px;
+    }
+
+    #loan-repayment-simulator .loan-panel {
+      padding: 22px;
+      background: var(--loan-surface);
+      border: 1px solid var(--loan-border);
+      border-radius: 14px;
+    }
+
+    #loan-repayment-simulator .loan-form {
+      display: grid;
+      gap: 18px;
+    }
+
+    #loan-repayment-simulator .loan-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    #loan-repayment-simulator label {
+      font-weight: 500;
+    }
+
+    #loan-repayment-simulator .loan-input-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      overflow: hidden;
+      background: var(--loan-bg);
+      border: 1px solid var(--loan-border);
+      border-radius: 10px;
+    }
+
+    #loan-repayment-simulator .loan-input-wrap:focus-within {
+      outline: 3px solid color-mix(in srgb, var(--loan-focus) 35%, transparent);
+      border-color: var(--loan-focus);
+    }
+
+    #loan-repayment-simulator .loan-input-wrap input {
+      min-width: 0;
+      min-height: 48px;
+      padding: 10px 12px;
+      color: var(--loan-text);
+      background: transparent;
+      border: 0;
+      font: inherit;
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+      outline: none;
+    }
+
+    #loan-repayment-simulator .loan-method {
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    #loan-repayment-simulator .loan-method legend {
+      margin-bottom: 7px;
+      padding: 0;
+      font-weight: 500;
+    }
+
+    #loan-repayment-simulator .loan-method-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    #loan-repayment-simulator .loan-method-choice {
+      display: flex;
+      align-items: center;
+      min-height: 46px;
+      gap: 8px;
+      padding: 9px 10px;
+      background: var(--loan-bg);
+      border: 1px solid var(--loan-border);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #loan-repayment-simulator .loan-method-choice:has(input:checked) {
+      border-color: var(--loan-focus);
+      background: color-mix(in srgb, var(--loan-action) 12%, var(--loan-bg));
+    }
+
+    #loan-repayment-simulator .loan-method-choice input {
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      accent-color: var(--loan-action);
+    }
+
+    #loan-repayment-simulator .loan-unit {
+      padding: 0 13px;
+      color: var(--loan-muted);
+      white-space: nowrap;
+    }
+
+    #loan-repayment-simulator .loan-submit {
+      min-height: 48px;
+      padding: 11px 18px;
+      color: var(--loan-action-text);
+      background: var(--loan-action);
+      border: 0;
+      border-radius: 10px;
+      font: inherit;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    #loan-repayment-simulator .loan-submit:focus-visible {
+      outline: 3px solid var(--loan-focus);
+      outline-offset: 3px;
+    }
+
+    #loan-repayment-simulator .loan-assumption {
+      margin: 0;
+      color: var(--loan-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    #loan-repayment-simulator .loan-error {
+      min-height: 22px;
+      margin: 0;
+      color: light-dark(#a12020, #ffaaaa);
+      font-size: 14px;
+    }
+
+    #loan-repayment-simulator .loan-results {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    #loan-repayment-simulator .loan-result-primary,
+    #loan-repayment-simulator .loan-result-secondary {
+      padding: 20px;
+      background: var(--loan-surface-strong);
+      border-radius: 12px;
+    }
+
+    #loan-repayment-simulator .loan-result-primary {
+      min-height: 156px;
+      display: grid;
+      align-content: center;
+    }
+
+    #loan-repayment-simulator .loan-result-label {
+      margin: 0 0 8px;
+      color: var(--loan-muted);
+      font-size: 14px;
+    }
+
+    #loan-repayment-simulator .loan-result-value {
+      margin: 0;
+      font-size: clamp(32px, 7vw, 52px);
+      line-height: 1.05;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+    }
+
+    #loan-repayment-simulator .loan-result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    #loan-repayment-simulator .loan-result-secondary .loan-result-value {
+      font-size: clamp(20px, 3.5vw, 26px);
+      white-space: nowrap;
+    }
+
+    #loan-repayment-simulator .loan-period {
+      margin: 0;
+      color: var(--loan-muted);
+      font-size: 13px;
+    }
+
+    #loan-repayment-simulator .loan-result-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 14px;
+      color: var(--loan-muted);
+      font-size: 13px;
+    }
+
+    #loan-repayment-simulator .loan-result-details strong {
+      color: var(--loan-text);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 660px) {
+      #loan-repayment-simulator .loan-header {
+        align-items: flex-start;
+        flex-direction: column-reverse;
+        padding: 22px;
+      }
+
+      #loan-repayment-simulator .loan-main {
+        grid-template-columns: 1fr;
+        padding: 16px;
+      }
+
+      #loan-repayment-simulator .loan-panel {
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      #loan-repayment-simulator .loan-method-options,
+      #loan-repayment-simulator .loan-result-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <div class="loan-app">
+    <header class="loan-header">
+      <h1 class="loan-title">返済シミュレータ</h1>
+      <p class="loan-version" aria-label="バージョン 0.3">v0.3</p>
+    </header>
+
+    <main class="loan-main">
+      <section class="loan-panel" aria-label="借入条件">
+        <form class="loan-form" id="loan-form">
+          <div class="loan-field">
+            <label for="loan-principal">借入金額</label>
+            <div class="loan-input-wrap">
+              <input id="loan-principal" name="principal" type="text" value="3,000,000" inputmode="numeric" autocomplete="off" required>
+              <span class="loan-unit">円</span>
+            </div>
+          </div>
+
+          <fieldset class="loan-method">
+            <legend>返済方式</legend>
+            <div class="loan-method-options">
+              <label class="loan-method-choice">
+                <input type="radio" name="method" value="annuity" checked>
+                <span>元利均等</span>
+              </label>
+              <label class="loan-method-choice">
+                <input type="radio" name="method" value="principal">
+                <span>元金均等</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="loan-field">
+            <label for="loan-rate">年利</label>
+            <div class="loan-input-wrap">
+              <input id="loan-rate" name="rate" type="number" value="1.5" min="0" max="100" step="0.01" inputmode="decimal" required>
+              <span class="loan-unit">%</span>
+            </div>
+          </div>
+
+          <div class="loan-field">
+            <label for="loan-years">返済年数</label>
+            <div class="loan-input-wrap">
+              <input id="loan-years" name="years" type="number" value="10" min="1" max="100" step="1" inputmode="numeric" required>
+              <span class="loan-unit">年</span>
+            </div>
+          </div>
+
+          <div class="loan-field">
+            <label for="loan-grace">元金据置期間</label>
+            <div class="loan-input-wrap">
+              <input id="loan-grace" name="grace" type="number" value="0" min="0" max="1199" step="1" inputmode="numeric" required>
+              <span class="loan-unit">か月</span>
+            </div>
+          </div>
+
+          <button class="loan-submit" type="submit">計算する</button>
+          <p class="loan-assumption">毎月払い・ボーナス返済なし・手数料なし。利息端数処理の正式仕様は要確認</p>
+          <p class="loan-error" id="loan-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section class="loan-results" aria-label="計算結果" aria-live="polite">
+        <div class="loan-result-primary">
+          <p class="loan-result-label">返済開始月の返済額</p>
+          <p class="loan-result-value" id="loan-first-payment">—</p>
+          <p class="loan-period" id="loan-period">—</p>
+          <div class="loan-result-details">
+            <span>最終回 <strong id="loan-last-payment">—</strong></span>
+            <span>据置期間中 <strong id="loan-grace-payment">—</strong></span>
+          </div>
+        </div>
+
+        <div class="loan-result-grid">
+          <div class="loan-result-secondary">
+            <p class="loan-result-label">総返済額</p>
+            <p class="loan-result-value" id="loan-total">—</p>
+          </div>
+          <div class="loan-result-secondary">
+            <p class="loan-result-label">利息総額</p>
+            <p class="loan-result-value" id="loan-interest">—</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('loan-repayment-simulator');
+      const form = root.querySelector('#loan-form');
+      const principalInput = root.querySelector('#loan-principal');
+      const rateInput = root.querySelector('#loan-rate');
+      const yearsInput = root.querySelector('#loan-years');
+      const graceInput = root.querySelector('#loan-grace');
+      const error = root.querySelector('#loan-error');
+      const firstPaymentOutput = root.querySelector('#loan-first-payment');
+      const lastPaymentOutput = root.querySelector('#loan-last-payment');
+      const gracePaymentOutput = root.querySelector('#loan-grace-payment');
+      const totalOutput = root.querySelector('#loan-total');
+      const interestOutput = root.querySelector('#loan-interest');
+      const periodOutput = root.querySelector('#loan-period');
+      const yen = new Intl.NumberFormat('ja-JP', {
+        style: 'currency',
+        currency: 'JPY',
+        maximumFractionDigits: 0
+      });
+
+      function parseYen(value) {
+        return Number(String(value).replace(/,/g, ''));
+      }
+
+      function formatPrincipalInput() {
+        const digits = principalInput.value.replace(/[^0-9]/g, '');
+        principalInput.value = digits ? Number(digits).toLocaleString('ja-JP') : '';
+      }
+
+      function calculate() {
+        const principal = parseYen(principalInput.value);
+        const annualRate = Number(rateInput.value);
+        const years = Number(yearsInput.value);
+        const graceMonths = Number(graceInput.value);
+        const method = form.elements.method.value;
+
+        if (!Number.isFinite(principal) || principal <= 0) {
+          error.textContent = '借入金額は1円以上で入力してください。';
+          return;
+        }
+        if (!Number.isFinite(annualRate) || annualRate < 0 || annualRate > 100) {
+          error.textContent = '年利は0%以上100%以下で入力してください。';
+          return;
+        }
+        if (!Number.isInteger(years) || years < 1 || years > 100) {
+          error.textContent = '返済年数は1年以上100年以下の整数で入力してください。';
+          return;
+        }
+
+        const months = years * 12;
+        if (!Number.isInteger(graceMonths) || graceMonths < 0 || graceMonths >= months) {
+          error.textContent = `元金据置期間は0か月以上${months - 1}か月以下で入力してください。`;
+          return;
+        }
+
+        error.textContent = '';
+        formatPrincipalInput();
+        const monthlyRate = annualRate / 100 / 12;
+        const repaymentMonths = months - graceMonths;
+        const gracePayment = principal * monthlyRate;
+        let firstPayment;
+        let lastPayment;
+        let totalInterest = gracePayment * graceMonths;
+
+        if (method === 'annuity') {
+          const regularPayment = monthlyRate === 0
+            ? principal / repaymentMonths
+            : principal * monthlyRate * Math.pow(1 + monthlyRate, repaymentMonths) /
+              (Math.pow(1 + monthlyRate, repaymentMonths) - 1);
+          firstPayment = regularPayment;
+          lastPayment = regularPayment;
+          totalInterest += regularPayment * repaymentMonths - principal;
+        } else {
+          const monthlyPrincipal = principal / repaymentMonths;
+          firstPayment = monthlyPrincipal + principal * monthlyRate;
+          lastPayment = monthlyPrincipal + monthlyPrincipal * monthlyRate;
+          totalInterest += monthlyRate * principal * (repaymentMonths + 1) / 2;
+        }
+
+        const totalPayment = principal + totalInterest;
+
+        firstPaymentOutput.textContent = yen.format(Math.round(firstPayment));
+        lastPaymentOutput.textContent = yen.format(Math.round(lastPayment));
+        gracePaymentOutput.textContent = graceMonths === 0
+          ? 'なし'
+          : yen.format(Math.round(gracePayment));
+        totalOutput.textContent = yen.format(Math.round(totalPayment));
+        interestOutput.textContent = yen.format(Math.round(totalInterest));
+        periodOutput.textContent = graceMonths === 0
+          ? `${repaymentMonths.toLocaleString('ja-JP')}回返済`
+          : `${graceMonths.toLocaleString('ja-JP')}か月据置後、${repaymentMonths.toLocaleString('ja-JP')}回返済`;
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        calculate();
+      });
+
+      principalInput.addEventListener('input', formatPrincipalInput);
+
+      calculate();
+    })();
+  </script>
+</section>

@@ -1,0 +1,130 @@
+name: Staging review and production approval
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: loan-repayment-release
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the release commit
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate files and intentional specification gap
+        run: npm run check
+      - name: Freeze the deployable app for both environments
+        uses: actions/upload-artifact@v5
+        with:
+          name: release-app-${{ github.sha }}
+          path: app
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy-staging:
+    name: Deploy the release commit to staging
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    environment:
+      name: staging
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    outputs:
+      staging-url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Download the validated release app
+        uses: actions/download-artifact@v6
+        with:
+          name: release-app-${{ github.sha }}
+          path: app
+      - name: Deploy static assets to the staging project
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy app --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main --commit-hash=${{ github.sha }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  capture-staging:
+    name: Capture and publish the staging screen
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the same release commit
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Exercise staging and capture the screen
+        env:
+          STAGING_URL: ${{ needs.deploy-staging.outputs.staging-url }}
+        run: npm run capture:staging
+      - name: Upload the screen for human review
+        uses: actions/upload-artifact@v5
+        with:
+          name: staging-screen-${{ github.sha }}
+          path: artifacts/staging-screen.png
+          if-no-files-found: error
+          retention-days: 14
+      - name: Add review instructions to the run summary
+        env:
+          STAGING_URL: ${{ needs.deploy-staging.outputs.staging-url }}
+        run: |
+          echo "## Production approval material" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Release commit: \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Staging URL: ${STAGING_URL}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Screenshot artifact: \`staging-screen-${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Review the URL and screenshot before approving the production environment." >> "$GITHUB_STEP_SUMMARY"
+
+  deploy-production:
+    name: Wait for a human, then deploy the same commit to production
+    needs: capture-staging
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - name: Download the exact app reviewed in staging
+        uses: actions/download-artifact@v6
+        with:
+          name: release-app-${{ github.sha }}
+          path: app
+      - name: Deploy the approved static assets to the production project
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy app --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main --commit-hash=${{ github.sha }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Confirm the production URL responds
+        env:
+          PRODUCTION_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: curl --fail --show-error --silent --retry 5 --retry-delay 3 "$PRODUCTION_URL" > /dev/null
