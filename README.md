@@ -10,7 +10,9 @@
 ```text
 loan-repayment-hands-on/
 ├─ .github/workflows/release.yml
+├─ .claude/settings.json
 ├─ .gitignore
+├─ CLAUDE.md
 ├─ README.md
 ├─ package.json
 ├─ package-lock.json
@@ -20,10 +22,14 @@ loan-repayment-hands-on/
 ├─ scripts/
 │  ├─ build-standalone.mjs
 │  ├─ capture-staging.mjs
+│  ├─ open-claude-hands-on.ps1
+│  ├─ preflight-claude-hands-on.ps1
 │  └─ validate-package.mjs
 └─ docs/
    ├─ basic-design.md
    ├─ cicd-setup.md
+   ├─ claude-hands-on.html
+   ├─ claude-hands-on.md
    ├─ test-spec.md
    └─ operator-story.md
 ```
@@ -36,6 +42,23 @@ loan-repayment-hands-on/
 - `docs/operator-story.md`: 参加者へ見せない運営用の狙いと期待行動
 - `.github/workflows/release.yml`: ステージング、自動画面確認、人間承認、本番デプロイ
 - `docs/cicd-setup.md`: GitHubとCloudflare Pagesの設定手順、判断点、留保
+- `docs/claude-hands-on.md`: Claude Codeハンズオンの全体像、時間配分、プロンプト例、チェックリスト
+- `docs/claude-hands-on.html`: 進捗をブラウザ内へ保存できる参加者向けガイド
+- `CLAUDE.md`: Claude Codeが常時参照する安全境界、判断停止条件、検証手順
+- `.claude/settings.json`: 読取・検証を中心にし、秘密値、push、deployを抑止する共有設定
+
+## Claude Codeハンズオン
+
+標準45分、短縮30分。初回は次を実行する。
+
+```powershell
+npm ci
+powershell -ExecutionPolicy Bypass -File scripts/preflight-claude-hands-on.ps1
+powershell -ExecutionPolicy Bypass -File scripts/open-claude-hands-on.ps1
+claude --permission-mode plan
+```
+
+ログイン、契約または組織ポリシーの設定は利用者側で確認する。このリポジトリへTokenやSecretを保存せず、`--dangerously-skip-permissions`は使わない。
 
 ## ローカル起動
 

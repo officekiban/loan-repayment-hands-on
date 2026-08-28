@@ -26,5 +26,12 @@ ${fragment}
 </html>
 `;
 
-await writeFile(outputPath, standalone, 'utf8');
-console.log(`Standalone app built: ${outputPath}`);
+const currentOutput = await readFile(outputPath, 'utf8').catch(() => null);
+const normalized = (value) => value.replace(/\r\n/g, '\n');
+
+if (currentOutput !== null && normalized(currentOutput) === normalized(standalone)) {
+  console.log(`Standalone app unchanged: ${outputPath}`);
+} else {
+  await writeFile(outputPath, standalone, 'utf8');
+  console.log(`Standalone app built: ${outputPath}`);
+}
