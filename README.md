@@ -37,13 +37,7 @@ loan-repayment-hands-on/
 
 ## Claude Codeハンズオン
 
-所要時間は約30分。次の順に実行する。
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts/preflight-claude-hands-on.ps1
-powershell -ExecutionPolicy Bypass -File scripts/open-claude-hands-on.ps1
-claude --dangerously-skip-permissions
-```
+所要時間は約30分。Claude Codeを開いた状態で、`docs/claude-hands-on.html`の手順に沿って進める。
 
 ## ローカル起動
 
@@ -57,8 +51,8 @@ python -m http.server 8765 --bind 127.0.0.1
 
 ## 現在の計算状態
 
-画面は、元利均等、元金均等および元金据置の概算に加え、月別の返済予定表を12件ずつ表示する。計算内部では小数を保持し、画面表示時だけ円単位へ丸めている。基本設計の`BD-RND-01`と`BD-RND-02`はまだ計算エンジンへ反映していない。
+画面は、元利均等、元金均等および元金据置の概算に加え、月別の返済予定表を12件ずつ表示する。計算内部では小数を保持し、画面表示時だけ円単位へ丸めている。基本設計書の「毎月利息」と「元金の端数」はまだ計算エンジンへ反映していない。
 
-`BD-RND-01`と`TS-05`の利息端数処理は、テストレビューで発見する意図的な不整合として残している。
+基本設計書の「毎月利息」とテスト仕様書兼成績書の「利息端数」は、テストレビューで発見する意図的な不整合として残している。
 
 画面配色は、日本政策金融公庫の公開Webサイトで使われている深緑、緑、生成りおよび青を参考にしている。ロゴ、名称表示または固有レイアウトは複製していない。

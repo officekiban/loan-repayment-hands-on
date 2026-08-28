@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Claude Code ハンズオン</title>
+  <title>AIエージェントを知る。｜Claude Code ハンズオン</title>
   <style>
     :root {
       --ink: #18301f;
@@ -131,6 +131,25 @@
     h3 { margin: 26px 0 8px; font-size: 17px; }
     .time { color: var(--muted); font-size: 13px; }
 
+    .environment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .environment {
+      padding: 16px;
+      background: #fbfcf8;
+      border: 1px solid #e0e4da;
+      border-top: 3px solid var(--green);
+      border-radius: 4px;
+    }
+
+    .environment strong { display: block; color: var(--green-deep); }
+    .environment span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .environment a { color: #0068a8; font-size: 12px; overflow-wrap: anywhere; }
+
     .command,
     .prompt {
       margin-top: 18px;
@@ -213,6 +232,7 @@
       .route-arrow { transform: rotate(90deg); text-align: center; }
       .progress { grid-template-columns: 1fr auto; }
       .track { grid-column: 1 / -1; grid-row: 2; }
+      .environment-grid { grid-template-columns: 1fr; }
       .prompt pre { padding: 36px 0 0; font-size: 12px; }
       .finish { align-items: flex-start; flex-direction: column; }
     }
@@ -222,8 +242,8 @@
   <div class="shell">
     <header class="hero">
       <p class="eyebrow">CLAUDE CODE HANDS-ON</p>
-      <h1>レビューして、<br>仕様変更する。</h1>
-      <p class="lead">テスト仕様書兼成績書の穴を見つけ、返済年数上限を100年から30年へ変更します。約30分です。</p>
+      <h1>AIエージェントを知る。</h1>
+      <p class="lead">テスト仕様書のレビューと小さな仕様変更を通して、Claude Codeとの仕事の進め方を体験します。約30分です。</p>
       <div class="route" aria-label="進行">
         <div><strong>01 テストレビュー</strong><small>矛盾とテスト漏れを確認</small></div>
         <span class="route-arrow" aria-hidden="true">→</span>
@@ -239,11 +259,15 @@
 
     <main>
       <section class="card">
-        <p class="step">START · 2 MIN</p>
-        <h2>Claude Codeを起動</h2>
-        <div class="command">powershell -ExecutionPolicy Bypass -File scripts/preflight-claude-hands-on.ps1
-powershell -ExecutionPolicy Bypass -File scripts/open-claude-hands-on.ps1
-claude --dangerously-skip-permissions</div>
+        <p class="step">ENVIRONMENTS</p>
+        <h2>3つの環境</h2>
+        <div class="environment-grid">
+          <div class="environment"><strong>開発環境</strong><span>Claude Codeが変更し、手元で確認</span><a href="http://127.0.0.1:8765/app/">127.0.0.1:8765/app/</a></div>
+          <div class="environment"><strong>テスト環境</strong><span>変更版を公開前に確認</span><a href="https://loan-hands-on-staging.pages.dev/">loan-hands-on-staging.pages.dev</a></div>
+          <div class="environment"><strong>本番環境</strong><span>完成版を公開</span><a href="https://loan-hands-on-production.pages.dev/">loan-hands-on-production.pages.dev</a></div>
+        </div>
+        <h3>開発環境を起動</h3>
+        <div class="command">python -m http.server 8765 --bind 127.0.0.1</div>
       </section>
 
       <section class="card">
@@ -253,21 +277,26 @@ claude --dangerously-skip-permissions</div>
         <div class="prompt"><button class="copy" type="button">コピー</button><pre>docs/test-spec.mdを、テスト仕様書兼成績書としてレビューしてください。
 docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだファイルは変更しないでください。
 
-次の観点で、問題ごとに「指摘」「根拠となるファイルとID」「見逃した場合の影響」「追加または修正すべきテスト」を示してください。
+次の観点で、問題ごとに「指摘」「根拠となる文書名と項目名」「見逃した場合の影響」「追加または修正すべきテスト」を示してください。
 
-- 基本設計と期待結果の矛盾
-- 設計項目に対するテスト漏れ
+- 基本設計書とテスト仕様書兼成績書の矛盾
+- 基本設計書に書かれているのにテストされていない仕様
 - 境界値テストの漏れ
-- 成績欄だけでは判定できないテスト
+- テスト結果だけでは正しさを判定できない項目
 
+番号やIDだけでなく、「基本設計書の毎月利息」「テスト仕様書兼成績書の利息端数」のように、何の項目か分かる書き方にしてください。
 重要度の高い順に並べてください。</pre></div>
 
-        <div class="answer"><strong>答え合わせ</strong><br>Claudeの回答に、最低限次の4点が含まれているか確認します。</div>
+        <div class="answer"><strong>答え合わせ</strong><br>1・2は文書を突き合わせれば分かる指摘です。3・4は、書かれていないテストまで考える一段深い指摘です。</div>
+        <h3>1・2：基本設計書とテスト仕様書兼成績書を突き合わせる</h3>
         <div class="checks">
-          <label class="check"><input type="checkbox" data-progress="review-1"><span><code>BD-RND-01</code>は切り捨て、<code>TS-05</code>は四捨五入</span></label>
-          <label class="check"><input type="checkbox" data-progress="review-2"><span><code>TS-02</code>では<code>BD-RND-02</code>の最終月調整を判定できない</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-1"><span>基本設計書の「毎月利息」は切り捨て、テスト仕様書兼成績書の「利息端数」は四捨五入</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-2"><span>基本設計書の「元金の端数」は最終回で調整するが、テスト仕様書兼成績書の「元利均等」は最終回も必ず同額</span></label>
+        </div>
+        <h3>3・4：「何をテストすべきか」まで一段深く考える</h3>
+        <div class="checks">
           <label class="check"><input type="checkbox" data-progress="review-3"><span>元金合計＝借入金額、最終残高0円の直接テストがない</span></label>
-          <label class="check"><input type="checkbox" data-progress="review-4"><span>返済年数の1年・100年・0年・101年の境界値テストがない</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-4"><span>基本設計書の「返済年数」に対し、1年・100年・0年・101年の境界値テストがない</span></label>
         </div>
       </section>
 
@@ -279,7 +308,7 @@ docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだフ
 
 次を同じ作業でそろえてください。
 
-1. docs/basic-design.mdのIN-03
+1. docs/basic-design.mdの入力項目「返済年数」
 2. docs/test-spec.mdの返済年数境界値テスト
    - 30年は受け付ける
    - 31年は入力エラーにする
@@ -291,7 +320,7 @@ docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだフ
 
         <h3>完了確認</h3>
         <div class="checks">
-          <label class="check"><input type="checkbox" data-progress="change-1"><span><code>IN-03</code>が1年以上30年以下</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-1"><span>基本設計書の「返済年数」が1年以上30年以下</span></label>
           <label class="check"><input type="checkbox" data-progress="change-2"><span>画面上限が30年、31年は入力エラー</span></label>
           <label class="check"><input type="checkbox" data-progress="change-3"><span>30年正常・31年エラーのテストが追加された</span></label>
           <label class="check"><input type="checkbox" data-progress="change-4"><span><code>app/index.html</code>が再生成された</span></label>
@@ -302,7 +331,7 @@ docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだフ
       <section class="card finish">
         <div>
           <p class="step">FINISH · 3 MIN</p>
-          <h2>4成果物と検証結果を確認して終了</h2>
+          <h2>変更した4成果物と検証結果を確認して終了</h2>
         </div>
         <button class="reset" id="reset-progress" type="button">チェックをリセット</button>
       </section>

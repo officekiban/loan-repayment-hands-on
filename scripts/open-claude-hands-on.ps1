@@ -17,5 +17,3 @@ Start-Process -FilePath $appPath
 
 Write-Host ''
 Write-Host 'Guide and simulator opened in the default browser.' -ForegroundColor Green
-Write-Host 'Start the hands-on in this terminal:' -ForegroundColor Cyan
-Write-Host '  claude --permission-mode plan'

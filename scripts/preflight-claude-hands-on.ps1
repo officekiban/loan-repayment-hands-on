@@ -77,4 +77,3 @@ if ($failures.Count -gt 0) {
 }
 
 Write-Host 'Preflight passed.' -ForegroundColor Green
-Write-Host 'Command: claude --dangerously-skip-permissions'
