@@ -117,6 +117,11 @@ if (!workflowText.includes('release-app-${{ github.sha }}') ||
     !workflowText.includes('path: claude-demo/app')) {
   throw new Error('Staging and production must deploy the same frozen artifact.');
 }
+if (!workflowText.includes('actions/upload-artifact@v6') ||
+    !workflowText.includes('actions/download-artifact@v7') ||
+    !workflowText.includes('cloudflare/wrangler-action@v4')) {
+  throw new Error('GitHub Actions must use Node.js 24-compatible artifact and Wrangler actions.');
+}
 
 const forbiddenPatterns = [
   /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/,
