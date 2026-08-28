@@ -31,6 +31,7 @@ const requiredFiles = [
   '.hands-on-baseline/app/loan-repayment-simulator.html',
   '.hands-on-baseline/docs/basic-design.md',
   '.hands-on-baseline/docs/test-spec.md',
+  '.github/workflows/validate-pr.yml',
   '.github/workflows/release.yml'
 ];
 
@@ -64,6 +65,7 @@ const claudeInstructions = await read('CLAUDE.md');
 const handsOnGuide = await read('docs/claude-hands-on.md');
 const handsOnHtml = await read('docs/claude-hands-on.html');
 const workflow = parseYaml(await read('.github/workflows/release.yml'));
+const pullRequestWorkflow = parseYaml(await read('.github/workflows/validate-pr.yml'));
 const demoFiles = (await walk(path.join(packageRoot, 'claude-demo')))
   .map((file) => path.relative(path.join(packageRoot, 'claude-demo'), file).replaceAll('\\', '/'));
 
@@ -112,6 +114,7 @@ if (workflow.jobs['deploy-production'].needs !== 'capture-staging') {
   throw new Error('Production must wait for the staging screenshot job.');
 }
 const workflowText = await read('.github/workflows/release.yml');
+const pullRequestWorkflowText = await read('.github/workflows/validate-pr.yml');
 if (!workflowText.includes('release-app-${{ github.sha }}') ||
     !workflowText.includes('Download the exact app reviewed in staging') ||
     !workflowText.includes('path: claude-demo/app')) {
@@ -121,6 +124,11 @@ if (!workflowText.includes('actions/upload-artifact@v6') ||
     !workflowText.includes('actions/download-artifact@v7') ||
     !workflowText.includes('cloudflare/wrangler-action@v4')) {
   throw new Error('GitHub Actions must use Node.js 24-compatible artifact and Wrangler actions.');
+}
+if (!pullRequestWorkflow?.on?.pull_request ||
+    !pullRequestWorkflowText.includes('branches: [main]') ||
+    !pullRequestWorkflowText.includes('npm --prefix claude-demo run check')) {
+  throw new Error('Pull Requests to main must run package and Claude demo validation without deployment jobs.');
 }
 
 const forbiddenPatterns = [
