@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>AIエージェントを知る。｜Claude Code ハンズオン</title>
+  <style>
+    :root {
+      --ink: #18301f;
+      --muted: #5d695f;
+      --paper: #fffef8;
+      --canvas: #f5f1d7;
+      --line: #d7dccf;
+      --green: #2f8608;
+      --green-deep: #1c5a00;
+      --green-pale: #e9f4e1;
+      --blue: #0071bc;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: "Segoe UI", "Yu Gothic UI", "Hiragino Kaku Gothic ProN", sans-serif;
+      line-height: 1.7;
+    }
+
+    button { font: inherit; }
+
+    .shell {
+      width: min(960px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 24px 0 64px;
+    }
+
+    .hero {
+      padding: clamp(28px, 6vw, 54px);
+      color: #fff;
+      background: var(--green-deep);
+      border-top: 7px solid var(--green);
+      border-radius: 6px;
+      box-shadow: 0 16px 36px rgba(28, 90, 0, .12);
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: #dff0d7;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .13em;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 56px);
+      font-weight: 650;
+      letter-spacing: -.035em;
+      line-height: 1.2;
+    }
+
+    .lead {
+      margin: 16px 0 0;
+      color: #eaf5e6;
+      font-size: 17px;
+    }
+
+    .route {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-top: 28px;
+    }
+
+    .route div {
+      padding: 14px 16px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 4px;
+    }
+
+    .route strong { display: block; }
+    .route small { color: #dcead7; }
+    .route-arrow { color: #d9ead3; font-size: 22px; }
+
+    .progress {
+      position: sticky;
+      z-index: 5;
+      top: 10px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin: 14px 0;
+      padding: 11px 14px;
+      background: rgba(255,254,248,.94);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      box-shadow: 0 8px 24px rgba(28,90,0,.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .progress strong,
+    .progress span { color: var(--green-deep); font-size: 12px; }
+
+    .track { height: 7px; overflow: hidden; background: #e4e8df; border-radius: 99px; }
+    .fill { width: 0; height: 100%; background: var(--green); transition: width .2s ease; }
+
+    main { display: grid; gap: 14px; }
+
+    .card {
+      padding: clamp(22px, 4vw, 38px);
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+
+    .step {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+    }
+
+    h2 { margin: 0; font-size: clamp(23px, 3.5vw, 33px); line-height: 1.3; }
+    h3 { margin: 26px 0 8px; font-size: 17px; }
+    .time { color: var(--muted); font-size: 13px; }
+
+    .environment-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .environment {
+      padding: 16px;
+      background: #fbfcf8;
+      border: 1px solid #e0e4da;
+      border-top: 3px solid var(--green);
+      border-radius: 4px;
+    }
+
+    .environment strong { display: block; color: var(--green-deep); }
+    .environment span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .environment a { color: #0068a8; font-size: 12px; overflow-wrap: anywhere; }
+
+    .command,
+    .prompt {
+      margin-top: 18px;
+      color: #edf5ea;
+      background: #17251b;
+      border: 1px solid #344b39;
+      border-radius: 5px;
+    }
+
+    .command { padding: 16px 18px; font: 13px/1.8 "Cascadia Code", Consolas, monospace; white-space: pre-wrap; }
+    .prompt { position: relative; padding: 20px; }
+
+    .prompt pre {
+      margin: 0;
+      padding-right: 78px;
+      font: 13px/1.75 "Cascadia Code", Consolas, monospace;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .copy {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 10px;
+      color: #e6f1e2;
+      background: #2b4130;
+      border: 1px solid #4c6752;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .checks { display: grid; gap: 8px; margin-top: 14px; }
+
+    .check {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 11px 12px;
+      background: #fbfcf8;
+      border: 1px solid #e0e4da;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .check:has(input:checked) { background: var(--green-pale); border-color: #bdd5b1; }
+    .check input { width: 17px; height: 17px; margin: 3px 0 0; accent-color: var(--green); }
+    .check span { font-size: 14px; }
+
+    .answer {
+      margin-top: 22px;
+      padding: 16px 18px;
+      background: #f2f7fb;
+      border-left: 4px solid var(--blue);
+    }
+
+    .answer strong { color: #005a93; }
+
+    .workspace-note {
+      margin-top: 18px;
+      padding: 13px 16px;
+      color: var(--green-deep);
+      background: var(--green-pale);
+      border-left: 4px solid var(--green);
+      font-weight: 700;
+    }
+
+    .deploy-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .deploy-flow div {
+      padding: 13px;
+      background: #fbfcf8;
+      border: 1px solid #e0e4da;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+
+    .deploy-flow strong { display: block; color: var(--green-deep); }
+
+    .steps { margin: 14px 0 0; padding-left: 22px; }
+    .steps li { margin: 7px 0; }
+
+    .finish {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .reset {
+      padding: 7px 11px;
+      color: var(--muted);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    footer { margin-top: 20px; color: var(--muted); font-size: 12px; text-align: center; }
+
+    @media (max-width: 620px) {
+      .route { grid-template-columns: 1fr; }
+      .route-arrow { transform: rotate(90deg); text-align: center; }
+      .progress { grid-template-columns: 1fr auto; }
+      .track { grid-column: 1 / -1; grid-row: 2; }
+      .environment-grid { grid-template-columns: 1fr; }
+      .deploy-flow { grid-template-columns: 1fr; }
+      .prompt pre { padding: 36px 0 0; font-size: 12px; }
+      .finish { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <p class="eyebrow">CLAUDE CODE HANDS-ON</p>
+      <h1>AIエージェントを知る。</h1>
+      <p class="lead">レビュー、仕様変更、Git、本番反映まで、Claude Codeとの仕事の進め方を体験します。約45分です。</p>
+      <div class="route" aria-label="進行">
+        <div><strong>01 テストレビュー</strong><small>矛盾とテスト漏れを確認</small></div>
+        <span class="route-arrow" aria-hidden="true">→</span>
+        <div><strong>02 仕様変更</strong><small>上限を30年へ</small></div>
+        <span class="route-arrow" aria-hidden="true">→</span>
+        <div><strong>03 Git・本番反映</strong><small>PR・確認・承認</small></div>
+      </div>
+    </header>
+
+    <div class="progress">
+      <strong>進捗</strong>
+      <div class="track"><div class="fill" id="progress-fill"></div></div>
+      <span id="progress-count">0 / 0</span>
+    </div>
+
+    <main>
+      <section class="card">
+        <p class="step">ENVIRONMENTS</p>
+        <h2>3つの環境</h2>
+        <div class="workspace-note">Claude Codeには、参加者用の <code>claude-demo</code> フォルダだけを開きます。</div>
+        <div class="environment-grid">
+          <div class="environment"><strong>開発環境</strong><span>Claude Codeが変更し、手元で確認</span><a href="http://127.0.0.1:8765/app/">127.0.0.1:8765/app/</a></div>
+          <div class="environment"><strong>テスト環境</strong><span>main反映後に自動配置</span><a href="https://loan-hands-on-staging.pages.dev/">loan-hands-on-staging.pages.dev</a></div>
+          <div class="environment"><strong>本番環境</strong><span>テスト確認と人の承認後に配置</span><a href="https://loan-hands-on-production.pages.dev/">loan-hands-on-production.pages.dev</a></div>
+        </div>
+        <h3>開発環境を起動</h3>
+        <div class="command">python -m http.server 8765 --bind 127.0.0.1</div>
+      </section>
+
+      <section class="card">
+        <p class="step">01 · 10 MIN</p>
+        <h2>テスト仕様書兼成績書をレビュー</h2>
+        <p class="time">下のプロンプトをそのまま貼り付けます。</p>
+        <div class="prompt"><button class="copy" type="button">コピー</button><pre>docs/test-spec.mdを、テスト仕様書兼成績書としてレビューしてください。
+docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだファイルは変更しないでください。
+
+次の観点で、問題ごとに「指摘」「根拠となる文書名と項目名」「見逃した場合の影響」「追加または修正すべきテスト」を示してください。
+
+- 基本設計書とテスト仕様書兼成績書の矛盾
+- 基本設計書に書かれているのにテストされていない仕様
+- 境界値テストの漏れ
+- テスト結果だけでは正しさを判定できない項目
+
+番号やIDだけでなく、「基本設計書の毎月利息」「テスト仕様書兼成績書の利息端数」のように、何の項目か分かる書き方にしてください。
+重要度の高い順に並べてください。</pre></div>
+
+        <div class="answer"><strong>答え合わせ</strong><br>1・2は文書を突き合わせれば分かる指摘です。3・4は、書かれていないテストまで考える一段深い指摘です。</div>
+        <h3>1・2：基本設計書とテスト仕様書兼成績書を突き合わせる</h3>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="review-1"><span>基本設計書の「毎月利息」は切り捨て、テスト仕様書兼成績書の「利息端数」は四捨五入</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-2"><span>基本設計書の「元金の端数」は最終回で調整するが、テスト仕様書兼成績書の「元利均等」は最終回も必ず同額</span></label>
+        </div>
+        <h3>3・4：「何をテストすべきか」まで一段深く考える</h3>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="review-3"><span>元金合計＝借入金額、最終残高0円の直接テストがない</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-4"><span>基本設計書の「返済年数」に対し、1年・100年・0年・101年の境界値テストがない</span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="step">02 · 15 MIN</p>
+        <h2>返済年数上限を30年へ変更</h2>
+        <p class="time">レビューが終わったら、続けて貼り付けます。</p>
+        <div class="prompt"><button class="copy" type="button">コピー</button><pre>仕様変更です。返済年数の上限を100年から30年へ変更してください。
+
+次を同じ作業でそろえてください。
+
+1. docs/basic-design.mdの入力項目「返済年数」
+2. docs/test-spec.mdの返済年数境界値テスト
+   - 30年は受け付ける
+   - 31年は入力エラーにする
+3. app/loan-repayment-simulator.htmlの入力上限とエラーメッセージ
+4. npm run buildで生成するapp/index.html
+
+利息端数処理の不整合は今回の変更対象ではありません。
+実装後にnpm run checkを実行し、変更箇所と確認結果を報告してください。</pre></div>
+
+        <h3>完了確認</h3>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="change-1"><span>基本設計書の「返済年数」が1年以上30年以下</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-2"><span>画面上限が30年、31年は入力エラー</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-3"><span>30年正常・31年エラーのテストが追加された</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-4"><span><code>app/index.html</code>が再生成された</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-5"><span><code>npm run check</code>が成功した</span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="step">03 · 15 MIN</p>
+        <h2>Gitでテスト環境・本番環境へ反映</h2>
+        <p class="time">変更をコミットして送るところまでClaude Codeに任せ、マージと本番承認は人が行います。</p>
+        <div class="prompt"><button class="copy" type="button">コピー</button><pre>ここまでの変更をGitで共有できる状態にしてください。
+
+1. git statusとgit diffで変更内容を確認する
+2. 現在の変更を保持したまま、hands-on/repayment-years-30-日時 という新しいブランチを作る
+3. このclaude-demoフォルダ内の変更だけをステージする
+4. 変更内容が分かるメッセージでコミットする
+5. git push -u origin HEADでGitHubへ送る
+
+mainへのマージは行わず、実行したコマンド、コミットID、Pull Requestを作るためのURLを報告してください。</pre></div>
+
+        <div class="deploy-flow" aria-label="デプロイの流れ">
+          <div><strong>Pull Request</strong>自動検証後にmainへマージ</div>
+          <div><strong>テスト環境</strong>URLと画面キャプチャを確認</div>
+          <div><strong>本番環境</strong>人が承認して同じ成果物を反映</div>
+        </div>
+
+        <h3>Pull Requestから本番反映まで</h3>
+        <ol class="steps">
+          <li>Claudeが示したURLからPull Requestを作る。</li>
+          <li>自動検証の成功を確認して<code>main</code>へマージする。</li>
+          <li>GitHub Actionsの<code>Staging review and production approval</code>を開く。</li>
+          <li>テスト環境のURLと画面キャプチャを確認する。</li>
+          <li><code>production</code>の承認待ちで、確認した人が承認する。</li>
+          <li>本番環境への反映成功と画面を確認する。</li>
+        </ol>
+
+        <h3>反映確認</h3>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="deploy-1"><span>Pull Requestに設計・テスト・画面の変更だけが含まれている</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-2"><span>自動検証が成功し、<code>main</code>へマージされた</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-3"><span>テスト環境で返済年数上限が30年になっている</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-4"><span>人がテスト環境を確認して本番反映を承認した</span></label>
+          <label class="check"><input type="checkbox" data-progress="deploy-5"><span>本番環境で返済年数上限が30年になっている</span></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <p class="step">RESET · FOR NEXT PERSON</p>
+        <h2>初期状態へ戻す</h2>
+        <p>本番反映後、運営者がリポジトリのルートで実行します。</p>
+        <div class="command">git switch main
+git pull --ff-only origin main
+.\scripts\reset-hands-on.ps1
+$stamp = Get-Date -Format 'yyyyMMdd-HHmm'
+git switch -c "reset/restore-initial-state-$stamp"
+git add claude-demo
+git commit -m "Reset hands-on workspace to initial state"
+git push -u origin HEAD</div>
+        <div class="answer"><strong>環境も戻す</strong><br>リセット用Pull Requestをmainへマージし、テスト環境の確認と本番承認まで行います。3環境すべてが100年上限の開始状態へ戻ります。</div>
+      </section>
+
+      <section class="card finish">
+        <div>
+          <p class="step">FINISH</p>
+          <h2>次の参加者も同じ初期状態から始められます</h2>
+        </div>
+        <button class="reset" id="reset-progress" type="button">チェックをリセット</button>
+      </section>
+    </main>
+
+    <footer>チェック状態はこのブラウザ内に保存されます。</footer>
+  </div>
+
+  <script>
+    (() => {
+      const key = 'loan-hands-on-simple-progress-v2';
+      const boxes = [...document.querySelectorAll('[data-progress]')];
+      const fill = document.getElementById('progress-fill');
+      const count = document.getElementById('progress-count');
+      const saved = JSON.parse(localStorage.getItem(key) || '{}');
+
+      function update() {
+        const completed = boxes.filter((box) => box.checked).length;
+        const percent = boxes.length ? Math.round(completed / boxes.length * 100) : 0;
+        fill.style.width = `${percent}%`;
+        count.textContent = `${completed} / ${boxes.length}`;
+        localStorage.setItem(key, JSON.stringify(Object.fromEntries(boxes.map((box) => [box.dataset.progress, box.checked]))));
+      }
+
+      boxes.forEach((box) => {
+        box.checked = Boolean(saved[box.dataset.progress]);
+        box.addEventListener('change', update);
+      });
+
+      document.querySelectorAll('.copy').forEach((button) => {
+        button.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(button.nextElementSibling.textContent);
+            button.textContent = 'コピー済み';
+          } catch {
+            button.textContent = '選択してコピー';
+          }
+          setTimeout(() => { button.textContent = 'コピー'; }, 1400);
+        });
+      });
+
+      document.getElementById('reset-progress').addEventListener('click', () => {
+        boxes.forEach((box) => { box.checked = false; });
+        update();
+      });
+
+      update();
+    })();
+  </script>
+</body>
+</html>
