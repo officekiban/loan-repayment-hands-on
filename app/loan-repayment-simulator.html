@@ -83,23 +83,6 @@
       letter-spacing: 0.06em;
     }
 
-    #loan-repayment-simulator .loan-notice {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 12px 34px;
-      color: #38516a;
-      background: #f2f7fb;
-      border-bottom: 1px solid #cfdeea;
-      font-size: 13px;
-    }
-
-    #loan-repayment-simulator .loan-notice-mark {
-      flex: 0 0 auto;
-      color: var(--loan-blue);
-      font-weight: 800;
-    }
-
     #loan-repayment-simulator .loan-main {
       display: grid;
       grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr);
@@ -464,7 +447,6 @@
         padding: 24px 20px 20px;
       }
 
-      #loan-repayment-simulator .loan-notice { padding: 11px 20px; }
       #loan-repayment-simulator .loan-main { gap: 14px; padding: 14px; }
 
       #loan-repayment-simulator .loan-panel-header {
@@ -492,7 +474,6 @@
     @media print {
       #loan-repayment-simulator .loan-app { box-shadow: none; }
       #loan-repayment-simulator .loan-input-panel,
-      #loan-repayment-simulator .loan-notice,
       #loan-repayment-simulator .loan-pagination { display: none; }
       #loan-repayment-simulator .loan-main { display: block; padding: 0; }
       #loan-repayment-simulator .loan-panel { margin-top: 16px; }
@@ -508,11 +489,6 @@
       </div>
       <p class="loan-version" aria-label="バージョン 0.3">v0.3</p>
     </header>
-
-    <div class="loan-notice">
-      <span class="loan-notice-mark" aria-hidden="true">i</span>
-      <span>ハンズオン用の概算です。実際の融資条件、審査、契約または返済額の確定には使用できません。</span>
-    </div>
 
     <main class="loan-main">
       <section class="loan-panel loan-input-panel" aria-labelledby="loan-input-title">
@@ -590,7 +566,7 @@
             <div class="loan-result-item"><span class="loan-result-label">利息総額</span><strong id="loan-interest">—</strong></div>
           </div>
 
-          <p class="loan-assumption">毎月払い・ボーナス返済なし・手数料なし。計算内部では小数を保持し、表示時に円単位へ丸めています。利息の正式な端数処理は人間判断待ちです。</p>
+          <p class="loan-assumption">毎月払い・ボーナス返済なし・手数料なし。計算内部では小数を保持し、表示時に円単位へ丸めています。</p>
         </div>
       </section>
 

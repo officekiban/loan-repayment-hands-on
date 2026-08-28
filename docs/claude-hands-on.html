@@ -4,261 +4,149 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <title>Claude Code × 成果物照合ハンズオン</title>
+  <title>Claude Code ハンズオン</title>
   <style>
     :root {
       --ink: #18301f;
       --muted: #5d695f;
       --paper: #fffef8;
       --canvas: #f5f1d7;
-      --line: #d9dccd;
+      --line: #d7dccf;
       --green: #2f8608;
       --green-deep: #1c5a00;
-      --green-soft: #e9f4e1;
+      --green-pale: #e9f4e1;
       --blue: #0071bc;
-      --red: #b51f1f;
-      --shadow: 0 18px 45px rgba(28, 90, 0, 0.09);
     }
 
     * { box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 8% 4%, rgba(47, 134, 8, 0.13), transparent 24rem),
-        linear-gradient(180deg, #faf8f0 0, var(--canvas) 34rem, #f8f7ef 100%);
+      background: var(--canvas);
       font-family: "Segoe UI", "Yu Gothic UI", "Hiragino Kaku Gothic ProN", sans-serif;
       line-height: 1.7;
     }
 
-    button, input { font: inherit; }
-
-    a { color: var(--green-deep); }
+    button { font: inherit; }
 
     .shell {
-      width: min(1160px, calc(100% - 32px));
+      width: min(960px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 34px 0 80px;
+      padding: 24px 0 64px;
     }
 
     .hero {
-      position: relative;
-      overflow: hidden;
-      padding: clamp(30px, 6vw, 66px);
+      padding: clamp(28px, 6vw, 54px);
       color: #fff;
-      background: linear-gradient(120deg, #163f10, var(--green-deep) 58%, #2f8608);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-    }
-
-    .hero::after {
-      position: absolute;
-      top: -90px;
-      right: -60px;
-      width: 320px;
-      height: 320px;
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 50%;
-      content: "";
-      box-shadow: 0 0 0 42px rgba(255,255,255,.045), 0 0 0 84px rgba(255,255,255,.03);
+      background: var(--green-deep);
+      border-top: 7px solid var(--green);
+      border-radius: 6px;
+      box-shadow: 0 16px 36px rgba(28, 90, 0, .12);
     }
 
     .eyebrow {
-      margin: 0 0 12px;
-      color: #ddf3d2;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
+      margin: 0 0 8px;
+      color: #dff0d7;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .13em;
     }
 
     h1 {
-      position: relative;
-      z-index: 1;
-      max-width: 820px;
       margin: 0;
-      font-size: clamp(32px, 6vw, 64px);
+      font-size: clamp(32px, 6vw, 56px);
       font-weight: 650;
       letter-spacing: -.035em;
-      line-height: 1.12;
+      line-height: 1.2;
     }
 
     .lead {
-      position: relative;
-      z-index: 1;
-      max-width: 720px;
-      margin: 22px 0 0;
-      color: #edf8e8;
-      font-size: clamp(16px, 2.2vw, 20px);
+      margin: 16px 0 0;
+      color: #eaf5e6;
+      font-size: 17px;
     }
 
-    .time-grid {
-      position: relative;
-      z-index: 1;
+    .route {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 12px;
-      max-width: 760px;
-      margin-top: 30px;
-    }
-
-    .time-card {
-      padding: 15px 17px;
-      background: rgba(255,255,255,.11);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 14px;
-      backdrop-filter: blur(8px);
-    }
-
-    .time-card strong { display: block; font-size: 24px; line-height: 1.2; }
-    .time-card span { color: #e3f1de; font-size: 13px; }
-
-    .progress-dock {
-      position: sticky;
-      z-index: 10;
-      top: 12px;
-      display: grid;
-      grid-template-columns: auto minmax(140px, 1fr) auto auto;
-      align-items: center;
+      grid-template-columns: 1fr auto 1fr;
       gap: 14px;
-      margin: 18px 0;
-      padding: 12px 14px;
-      background: rgba(255, 254, 248, .92);
-      border: 1px solid rgba(28,90,0,.16);
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(28,90,0,.08);
-      backdrop-filter: blur(12px);
+      align-items: center;
+      margin-top: 28px;
     }
 
-    .progress-label { font-size: 13px; font-weight: 700; }
-
-    .progress-track {
-      overflow: hidden;
-      height: 8px;
-      background: #e4e8df;
-      border-radius: 999px;
+    .route div {
+      padding: 14px 16px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 4px;
     }
 
-    .progress-fill {
-      width: 0;
-      height: 100%;
-      background: linear-gradient(90deg, var(--green-deep), var(--green));
-      border-radius: inherit;
-      transition: width .25s ease;
-    }
+    .route strong { display: block; }
+    .route small { color: #dcead7; }
+    .route-arrow { color: #d9ead3; font-size: 22px; }
 
-    .progress-count {
-      min-width: 72px;
-      color: var(--green-deep);
-      font-size: 13px;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .reset {
-      padding: 7px 11px;
-      color: var(--muted);
-      background: transparent;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      cursor: pointer;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 240px minmax(0, 1fr);
-      gap: 22px;
-      align-items: start;
-    }
-
-    nav {
+    .progress {
       position: sticky;
-      top: 86px;
-      padding: 18px;
-      background: rgba(255,254,248,.8);
+      z-index: 5;
+      top: 10px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center;
+      margin: 14px 0;
+      padding: 11px 14px;
+      background: rgba(255,254,248,.94);
       border: 1px solid var(--line);
-      border-radius: 18px;
+      border-radius: 5px;
+      box-shadow: 0 8px 24px rgba(28,90,0,.08);
+      backdrop-filter: blur(10px);
     }
 
-    nav p { margin: 0 0 9px; color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
-    nav a { display: block; padding: 7px 8px; color: var(--ink); border-radius: 8px; font-size: 14px; text-decoration: none; }
-    nav a:hover { background: var(--green-soft); color: var(--green-deep); }
+    .progress strong,
+    .progress span { color: var(--green-deep); font-size: 12px; }
 
-    main { display: grid; gap: 18px; }
+    .track { height: 7px; overflow: hidden; background: #e4e8df; border-radius: 99px; }
+    .fill { width: 0; height: 100%; background: var(--green); transition: width .2s ease; }
+
+    main { display: grid; gap: 14px; }
 
     .card {
       padding: clamp(22px, 4vw, 38px);
       background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 22px;
-      box-shadow: 0 10px 30px rgba(28,90,0,.04);
+      border-radius: 6px;
     }
 
-    h2 { margin: 0 0 8px; font-size: clamp(23px, 3vw, 34px); line-height: 1.25; letter-spacing: -.02em; }
-    h3 { margin: 28px 0 10px; font-size: 18px; }
-    .section-kicker { margin: 0 0 8px; color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-    .section-note { margin: 0 0 24px; color: var(--muted); }
-
-    .flow {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 24px;
+    .step {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
     }
 
-    .flow div {
-      position: relative;
-      min-height: 104px;
-      padding: 15px;
-      background: var(--green-soft);
-      border-radius: 13px;
-    }
+    h2 { margin: 0; font-size: clamp(23px, 3.5vw, 33px); line-height: 1.3; }
+    h3 { margin: 26px 0 8px; font-size: 17px; }
+    .time { color: var(--muted); font-size: 13px; }
 
-    .flow strong { display: block; margin-bottom: 5px; color: var(--green-deep); }
-    .flow small { color: var(--muted); }
-
-    .agenda { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .agenda th, .agenda td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-    .agenda th { color: var(--muted); font-size: 12px; letter-spacing: .04em; }
-    .agenda td:first-child { color: var(--green-deep); font-weight: 750; white-space: nowrap; }
-
-    .checks { display: grid; gap: 9px; margin: 18px 0 0; }
-
-    .check {
-      display: grid;
-      grid-template-columns: 22px 1fr;
-      gap: 11px;
-      align-items: start;
-      padding: 11px 12px;
-      background: #fbfcf7;
-      border: 1px solid #e4e7dc;
-      border-radius: 11px;
-      cursor: pointer;
-    }
-
-    .check:hover { border-color: #bdd4b2; }
-    .check:has(input:checked) { background: var(--green-soft); border-color: #b8d5aa; }
-    .check input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--green); }
-    .check span { font-size: 14px; }
-    .check:has(input:checked) span { color: #42603b; text-decoration: line-through; text-decoration-color: #8eaa85; }
-
+    .command,
     .prompt {
-      position: relative;
-      margin: 14px 0 0;
-      padding: 20px;
-      color: #ecf3e9;
+      margin-top: 18px;
+      color: #edf5ea;
       background: #17251b;
-      border: 1px solid #314a37;
-      border-radius: 15px;
+      border: 1px solid #344b39;
+      border-radius: 5px;
     }
+
+    .command { padding: 16px 18px; font: 13px/1.8 "Cascadia Code", Consolas, monospace; white-space: pre-wrap; }
+    .prompt { position: relative; padding: 20px; }
 
     .prompt pre {
       margin: 0;
-      padding-right: 74px;
-      font: 14px/1.75 "Cascadia Code", Consolas, monospace;
+      padding-right: 78px;
+      font: 13px/1.75 "Cascadia Code", Consolas, monospace;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
     }
@@ -267,394 +155,201 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      padding: 7px 10px;
-      color: #d9ead4;
-      background: #273c2c;
-      border: 1px solid #45614b;
-      border-radius: 8px;
+      padding: 6px 10px;
+      color: #e6f1e2;
+      background: #2b4130;
+      border: 1px solid #4c6752;
+      border-radius: 3px;
       cursor: pointer;
     }
 
-    .copy:hover { background: #33513a; }
+    .checks { display: grid; gap: 8px; margin-top: 14px; }
 
-    .decision {
-      margin-top: 20px;
-      padding: 18px 20px;
+    .check {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 11px 12px;
+      background: #fbfcf8;
+      border: 1px solid #e0e4da;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .check:has(input:checked) { background: var(--green-pale); border-color: #bdd5b1; }
+    .check input { width: 17px; height: 17px; margin: 3px 0 0; accent-color: var(--green); }
+    .check span { font-size: 14px; }
+
+    .answer {
+      margin-top: 22px;
+      padding: 16px 18px;
       background: #f2f7fb;
       border-left: 4px solid var(--blue);
-      border-radius: 4px 12px 12px 4px;
     }
 
-    .decision strong { color: #005a93; }
+    .answer strong { color: #005a93; }
 
-    .warning {
-      padding: 18px 20px;
-      background: #fff7f5;
-      border: 1px solid #efcbc5;
-      border-radius: 12px;
+    .finish {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
     }
 
-    .warning strong { color: var(--red); }
-
-    .command {
-      padding: 15px 17px;
-      color: #eff7ed;
-      background: #1b2a1e;
-      border-radius: 12px;
-      font: 14px/1.8 "Cascadia Code", Consolas, monospace;
-      white-space: pre-wrap;
-    }
-
-    .record-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .record-grid label { color: var(--muted); font-size: 12px; font-weight: 700; }
-    .record-grid input {
-      width: 100%;
-      margin-top: 5px;
-      padding: 10px 11px;
-      color: var(--ink);
+    .reset {
+      padding: 7px 11px;
+      color: var(--muted);
       background: #fff;
       border: 1px solid var(--line);
-      border-radius: 9px;
+      border-radius: 3px;
+      cursor: pointer;
     }
 
-    .record-grid input:focus { outline: 3px solid rgba(0,113,188,.18); border-color: var(--blue); }
+    footer { margin-top: 20px; color: var(--muted); font-size: 12px; text-align: center; }
 
-    footer { max-width: 800px; margin: 30px auto 0; color: var(--muted); font-size: 12px; text-align: center; }
-
-    @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
-      nav { position: static; display: flex; gap: 6px; overflow-x: auto; }
-      nav p { display: none; }
-      nav a { flex: 0 0 auto; }
-      .flow { grid-template-columns: 1fr 1fr; }
-    }
-
-    @media (max-width: 650px) {
-      .shell { width: min(100% - 18px, 1160px); padding-top: 9px; }
-      .hero { border-radius: 18px; }
-      .time-grid { grid-template-columns: 1fr; }
-      .progress-dock { grid-template-columns: 1fr auto; }
-      .progress-track { grid-column: 1 / -1; grid-row: 2; }
-      .reset { grid-column: 2; grid-row: 1; }
-      .progress-count { grid-column: 1; grid-row: 1; text-align: left; }
-      .progress-label { display: none; }
-      .flow, .record-grid { grid-template-columns: 1fr; }
-      .agenda th:nth-child(3), .agenda td:nth-child(3) { display: none; }
-      .prompt pre { padding: 38px 0 0; font-size: 12px; }
-    }
-
-    @media print {
-      body { background: #fff; }
-      .shell { width: 100%; padding: 0; }
-      .hero { color: #000; background: #fff; box-shadow: none; border: 2px solid var(--green-deep); }
-      .lead, .eyebrow { color: #222; }
-      .progress-dock, nav, .copy, .reset { display: none; }
-      .layout { display: block; }
-      .card { break-inside: avoid; box-shadow: none; margin: 12px 0; }
+    @media (max-width: 620px) {
+      .route { grid-template-columns: 1fr; }
+      .route-arrow { transform: rotate(90deg); text-align: center; }
+      .progress { grid-template-columns: 1fr auto; }
+      .track { grid-column: 1 / -1; grid-row: 2; }
+      .prompt pre { padding: 36px 0 0; font-size: 12px; }
+      .finish { align-items: flex-start; flex-direction: column; }
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <header class="hero">
-      <p class="eyebrow">Agent review workshop · v0.3</p>
-      <h1>Claude Code ×<br>成果物照合ハンズオン</h1>
-      <p class="lead">AIに答えを急がせず、根拠の衝突で止め、人間判断のあとに成果物をそろえる。速さより、判断境界を体験する45分です。</p>
-      <div class="time-grid" aria-label="所要時間">
-        <div class="time-card"><strong>45分</strong><span>標準コース</span></div>
-        <div class="time-card"><strong>30分</strong><span>判断引継ぎまで</span></div>
-        <div class="time-card"><strong>+15分</strong><span>CI/CD観察</span></div>
+      <p class="eyebrow">CLAUDE CODE HANDS-ON</p>
+      <h1>レビューして、<br>仕様変更する。</h1>
+      <p class="lead">テスト仕様書兼成績書の穴を見つけ、返済年数上限を100年から30年へ変更します。約30分です。</p>
+      <div class="route" aria-label="進行">
+        <div><strong>01 テストレビュー</strong><small>矛盾とテスト漏れを確認</small></div>
+        <span class="route-arrow" aria-hidden="true">→</span>
+        <div><strong>02 仕様変更</strong><small>100年上限を30年へ変更</small></div>
       </div>
     </header>
 
-    <div class="progress-dock" aria-label="進捗">
-      <span class="progress-label">PROGRESS</span>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <span class="progress-count" id="progress-count">0 / 0</span>
-      <button class="reset" id="reset-progress" type="button">リセット</button>
+    <div class="progress">
+      <strong>進捗</strong>
+      <div class="track"><div class="fill" id="progress-fill"></div></div>
+      <span id="progress-count">0 / 0</span>
     </div>
 
-    <div class="layout">
-      <nav aria-label="目次">
-        <p>CONTENTS</p>
-        <a href="#overview">全体像</a>
-        <a href="#setup">0. 準備</a>
-        <a href="#map">1. 把握</a>
-        <a href="#review">2. 照合</a>
-        <a href="#decision">3. 判断</a>
-        <a href="#align">4. 整合</a>
-        <a href="#close">5. 終了</a>
-        <a href="#advanced">発展</a>
-      </nav>
+    <main>
+      <section class="card">
+        <p class="step">START · 2 MIN</p>
+        <h2>Claude Codeを起動</h2>
+        <div class="command">powershell -ExecutionPolicy Bypass -File scripts/preflight-claude-hands-on.ps1
+powershell -ExecutionPolicy Bypass -File scripts/open-claude-hands-on.ps1
+claude --dangerously-skip-permissions</div>
+      </section>
 
-      <main>
-        <section class="card" id="overview">
-          <p class="section-kicker">Overview</p>
-          <h2>今日の全体像</h2>
-          <p class="section-note">完成コードを作る演習ではありません。Claudeが証拠不足を検知し、人へ戻せるかを確かめます。</p>
-          <div class="flow" aria-label="ハンズオンの流れ">
-            <div><strong>01 読む</strong><small>成果物と役割を把握</small></div>
-            <div><strong>02 照合</strong><small>一致・不一致・不足</small></div>
-            <div><strong>03 止まる</strong><small>推測せず判断待ち</small></div>
-            <div><strong>04 そろえる</strong><small>人の回答を反映</small></div>
-            <div><strong>05 確かめる</strong><small>差分と検証を確認</small></div>
-          </div>
-          <table class="agenda">
-            <thead><tr><th>時間</th><th>フェーズ</th><th>確認する能力</th></tr></thead>
-            <tbody>
-              <tr><td>0–5分</td><td>準備</td><td>対象と安全境界を固定する</td></tr>
-              <tr><td>5–10分</td><td>現状把握</td><td>事実と不明点を分ける</td></tr>
-              <tr><td>10–20分</td><td>成果物照合</td><td>根拠付きで差異を見つける</td></tr>
-              <tr><td>20–28分</td><td>人間判断</td><td>独断せず質問へ変換する</td></tr>
-              <tr><td>28–40分</td><td>整合</td><td>同じ決定で成果物をそろえる</td></tr>
-              <tr><td>40–45分</td><td>終了</td><td>証拠と留保を残す</td></tr>
-            </tbody>
-          </table>
-        </section>
+      <section class="card">
+        <p class="step">01 · 10 MIN</p>
+        <h2>テスト仕様書兼成績書をレビュー</h2>
+        <p class="time">下のプロンプトをそのまま貼り付けます。</p>
+        <div class="prompt"><button class="copy" type="button">コピー</button><pre>docs/test-spec.mdを、テスト仕様書兼成績書としてレビューしてください。
+docs/basic-design.mdとapp/loan-repayment-simulator.htmlを照合し、まだファイルは変更しないでください。
 
-        <section class="card" id="setup">
-          <p class="section-kicker">00 · 5 minutes</p>
-          <h2>開始前の準備</h2>
-          <p class="section-note">Claude CodeはPlan Modeで開始します。ログインや契約の新規有効化は、この手順には含みません。</p>
-          <div class="command">npm ci
-powershell -ExecutionPolicy Bypass -File scripts/preflight-claude-hands-on.ps1
-claude --permission-mode plan</div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="setup-1"><span>ダミー値と公開情報だけを使っている</span></label>
-            <label class="check"><input type="checkbox" data-progress="setup-2"><span>Token、Secret、個人情報、内部資料を貼り付けていない</span></label>
-            <label class="check"><input type="checkbox" data-progress="setup-3"><span>Claude Code、Node.js、npm、Gitが利用できる</span></label>
-            <label class="check"><input type="checkbox" data-progress="setup-4"><span><code>npm run check</code>が成功した</span></label>
-            <label class="check"><input type="checkbox" data-progress="setup-5"><span>現在のブランチとGit差分を把握した</span></label>
-          </div>
-        </section>
+次の観点で、問題ごとに「指摘」「根拠となるファイルとID」「見逃した場合の影響」「追加または修正すべきテスト」を示してください。
 
-        <section class="card" id="map">
-          <p class="section-kicker">01 · 5 minutes</p>
-          <h2>変更せず、全体をつかむ</h2>
-          <p class="section-note">最初の応答では、現在の事実と未確認事項が混ざっていないかを見ます。</p>
-          <div class="prompt"><button class="copy" type="button">コピー</button><pre>このリポジトリのハンズオンを開始します。まだファイルを変更しないでください。
+- 基本設計と期待結果の矛盾
+- 設計項目に対するテスト漏れ
+- 境界値テストの漏れ
+- 成績欄だけでは判定できないテスト
 
-README.md、docs/basic-design.md、docs/test-spec.md、
-app/loan-repayment-simulator.html、.github/workflows/release.yml、
-docs/cicd-setup.mdを読んで、次を簡潔に整理してください。
+重要度の高い順に並べてください。</pre></div>
 
-1. このモックの目的と非対象
-2. 設計・テスト・実装・CI/CDの関係
-3. 現在確認できる事実
-4. まだ証拠がなく判断できないこと
+        <div class="answer"><strong>答え合わせ</strong><br>Claudeの回答に、最低限次の4点が含まれているか確認します。</div>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="review-1"><span><code>BD-RND-01</code>は切り捨て、<code>TS-05</code>は四捨五入</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-2"><span><code>TS-02</code>では<code>BD-RND-02</code>の最終月調整を判定できない</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-3"><span>元金合計＝借入金額、最終残高0円の直接テストがない</span></label>
+          <label class="check"><input type="checkbox" data-progress="review-4"><span>返済年数の1年・100年・0年・101年の境界値テストがない</span></label>
+        </div>
+      </section>
 
-重要な説明にはファイル名とIDを付けてください。</pre></div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="map-1"><span>目的と非対象が分離された</span></label>
-            <label class="check"><input type="checkbox" data-progress="map-2"><span>成果物同士の関係が説明された</span></label>
-            <label class="check"><input type="checkbox" data-progress="map-3"><span>事実と未確認事項が分けられた</span></label>
-          </div>
-        </section>
+      <section class="card">
+        <p class="step">02 · 15 MIN</p>
+        <h2>返済年数上限を30年へ変更</h2>
+        <p class="time">レビューが終わったら、続けて貼り付けます。</p>
+        <div class="prompt"><button class="copy" type="button">コピー</button><pre>仕様変更です。返済年数の上限を100年から30年へ変更してください。
 
-        <section class="card" id="review">
-          <p class="section-kicker">02 · 10 minutes</p>
-          <h2>成果物を相互照合する</h2>
-          <p class="section-note">修正案より先に、一致・不一致・不足・未反映を分類させます。</p>
-          <div class="prompt"><button class="copy" type="button">コピー</button><pre>引き続きファイルは変更しないでください。
+次を同じ作業でそろえてください。
 
-入力条件、返済方式、据置期間、端数処理、表示結果について、
-基本設計、テスト仕様、実装を相互照合してください。
+1. docs/basic-design.mdのIN-03
+2. docs/test-spec.mdの返済年数境界値テスト
+   - 30年は受け付ける
+   - 31年は入力エラーにする
+3. app/loan-repayment-simulator.htmlの入力上限とエラーメッセージ
+4. npm run buildで生成するapp/index.html
 
-結果は「一致」「不一致」「テスト不足」「実装未反映」に分け、
-各項目にファイル名、IDまたは該当箇所、短い根拠を付けてください。
-上位根拠がなく正解を決められない項目は、推測で解消せず
-「人間判断待ち」と明記してください。</pre></div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="review-1"><span>3種類以上の成果物を相互照合した</span></label>
-            <label class="check"><input type="checkbox" data-progress="review-2"><span>重要な論点にファイル名とIDが付いた</span></label>
-            <label class="check"><input type="checkbox" data-progress="review-3"><span>不一致と未実装が区別された</span></label>
-            <label class="check"><input type="checkbox" data-progress="review-4"><span>根拠のない正解を選ばなかった</span></label>
-          </div>
-        </section>
+利息端数処理の不整合は今回の変更対象ではありません。
+実装後にnpm run checkを実行し、変更箇所と確認結果を報告してください。</pre></div>
 
-        <section class="card" id="decision">
-          <p class="section-kicker">03 · 8 minutes</p>
-          <h2>人が判断できる形へ渡す</h2>
-          <p class="section-note">「Claudeならどちらを選ぶか」ではなく、判断者が必要な材料を一件にまとめます。</p>
-          <div class="prompt"><button class="copy" type="button">コピー</button><pre>人間判断が必要な論点だけを、1件の判断メモにしてください。
+        <h3>完了確認</h3>
+        <div class="checks">
+          <label class="check"><input type="checkbox" data-progress="change-1"><span><code>IN-03</code>が1年以上30年以下</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-2"><span>画面上限が30年、31年は入力エラー</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-3"><span>30年正常・31年エラーのテストが追加された</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-4"><span><code>app/index.html</code>が再生成された</span></label>
+          <label class="check"><input type="checkbox" data-progress="change-5"><span><code>npm run check</code>が成功した</span></label>
+        </div>
+      </section>
 
-- 論点
-- 衝突している根拠
-- それぞれを採用した場合に変わる成果物
-- 現時点で決められない理由
-- 人間への質問（1問）
-- 回答が得られるまで保留する作業
+      <section class="card finish">
+        <div>
+          <p class="step">FINISH · 3 MIN</p>
+          <h2>4成果物と検証結果を確認して終了</h2>
+        </div>
+        <button class="reset" id="reset-progress" type="button">チェックをリセット</button>
+      </section>
+    </main>
 
-推奨を出す場合は、事実とは分け、根拠と留保を明記してください。
-まだ実装しないでください。</pre></div>
-          <div class="decision"><strong>Human checkpoint</strong><br>採用・修正・保留を人が明示します。根拠が足りなければ「保留」が正解です。AIを動かすためだけの決定はしません。</div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="decision-1"><span>衝突する根拠が並べて示された</span></label>
-            <label class="check"><input type="checkbox" data-progress="decision-2"><span>影響成果物が列挙された</span></label>
-            <label class="check"><input type="checkbox" data-progress="decision-3"><span>人間への質問が1問に絞られた</span></label>
-            <label class="check"><input type="checkbox" data-progress="decision-4"><span>判断者・判断内容・根拠を記録した</span></label>
-          </div>
-        </section>
-
-        <section class="card" id="align">
-          <p class="section-kicker">04 · 12 minutes</p>
-          <h2>判断後に、同じ変更でそろえる</h2>
-          <p class="section-note">人の判断が出た場合だけ修正します。保留なら変更せず、再開条件を残します。</p>
-          <h3>採用・修正する場合</h3>
-          <div class="prompt"><button class="copy" type="button">コピー</button><pre>人間判断を伝えます。
-
-判断: [ここに採用する規則を書く]
-判断者: [役割名]
-根拠: [承認済みの根拠を書く]
-
-この判断に合わせ、影響する基本設計、テスト仕様、実装、
-テスト期待値を同じ変更内で整合させてください。
-app/index.htmlは直接編集せず、編集元を直してnpm run buildで生成してください。
-
-変更後にnpm run checkとgit diff --checkを実行し、
-変更ファイル、確認結果、未解決事項を報告してください。
-push、deploy、Secret操作はしないでください。</pre></div>
-          <h3>保留する場合</h3>
-          <div class="prompt"><button class="copy" type="button">コピー</button><pre>人間判断は「根拠不足のため保留」です。実装とテスト期待値は変更しないでください。
-
-論点、確認先、必要な根拠、影響範囲、再開条件を、
-そのまま課題票へ貼れる形式でまとめてください。
-現在のGit差分も確認し、意図しない変更がないことを報告してください。</pre></div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="align-1"><span>人間の回答がプロンプトに明記された</span></label>
-            <label class="check"><input type="checkbox" data-progress="align-2"><span>影響成果物が同じ決定で整合した、または保留された</span></label>
-            <label class="check"><input type="checkbox" data-progress="align-3"><span>生成物を直接編集していない</span></label>
-            <label class="check"><input type="checkbox" data-progress="align-4"><span>push・deploy・Secret操作をしていない</span></label>
-          </div>
-        </section>
-
-        <section class="card" id="close">
-          <p class="section-kicker">05 · 5 minutes</p>
-          <h2>証拠を確認して閉じる</h2>
-          <div class="command">npm run check
-git diff --check
-git status --short --branch
-git diff --stat
-git diff</div>
-          <div class="prompt"><button class="copy" type="button">コピー</button><pre>最終レビューをしてください。新しい変更は加えないでください。
-
-1. 人間判断と変更内容の対応
-2. 設計・テスト・実装の整合
-3. 実行した検証と結果
-4. 残る留保と未確認事項
-5. GitHubへ反映する前に人が見るべき点
-
-成功したコマンドや画面表示を、業務仕様が正しい証拠とは扱わないでください。</pre></div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="close-1"><span><code>npm run check</code>と<code>git diff --check</code>が成功した</span></label>
-            <label class="check"><input type="checkbox" data-progress="close-2"><span>Git差分を人が読んだ</span></label>
-            <label class="check"><input type="checkbox" data-progress="close-3"><span>未解決事項と次の人間行動が明記された</span></label>
-            <label class="check"><input type="checkbox" data-progress="close-4"><span>完了または保留を宣言した</span></label>
-          </div>
-          <div class="record-grid" aria-label="終了記録">
-            <label>実施日<input data-record="date" placeholder="YYYY-MM-DD"></label>
-            <label>参加者<input data-record="people" placeholder="氏名ではなく役割名でも可"></label>
-            <label>branch / commit<input data-record="revision" placeholder="branch / short SHA"></label>
-            <label>判断<input data-record="decision" placeholder="採用 / 修正 / 保留"></label>
-            <label>未解決事項<input data-record="open" placeholder="なければ なし"></label>
-            <label>次の担当・期限<input data-record="next" placeholder="担当 / YYYY-MM-DD"></label>
-          </div>
-        </section>
-
-        <section class="card" id="advanced">
-          <p class="section-kicker">Advanced · +15 minutes</p>
-          <h2>CI/CDを観察する</h2>
-          <p class="section-note">既存環境を使う場合だけ実施します。GitHub ActionsとEnvironment承認は人が操作します。</p>
-          <ol>
-            <li>同一コミットから配布物が固定されることを確認する。</li>
-            <li>ステージングURLとスクリーンショットを人が確認する。</li>
-            <li><code>production</code> Environmentが人間承認待ちで停止することを確認する。</li>
-            <li>承認または拒否は人が判断する。</li>
-          </ol>
-          <p><a href="https://loan-hands-on-staging.pages.dev/">ステージング</a> · <a href="https://loan-hands-on-production.pages.dev/">本番</a></p>
-          <div class="warning"><strong>注意</strong><br>デプロイ成功やスクリーンショット生成は、計算ルールの妥当性を証明しません。TokenやSecretをClaudeへ渡さないでください。</div>
-          <div class="checks">
-            <label class="check"><input type="checkbox" data-progress="advanced-1"><span>ステージングと本番が同一の固定成果物を使う構成を確認した</span></label>
-            <label class="check"><input type="checkbox" data-progress="advanced-2"><span>本番前の人間承認ゲートを確認した</span></label>
-          </div>
-        </section>
-      </main>
-    </div>
-
-    <footer>
-      チェックと終了記録は、このブラウザのlocalStorageだけに保存されます。サーバー送信はありません。<br>
-      配色は日本政策金融公庫公式サイトの公開配色を参考にし、ロゴや固有デザインは複製していません。
-    </footer>
+    <footer>チェック状態はこのブラウザ内に保存されます。</footer>
   </div>
 
   <script>
     (() => {
-      const progressKey = 'loan-hands-on-progress-v1';
-      const recordKey = 'loan-hands-on-record-v1';
+      const key = 'loan-hands-on-simple-progress-v1';
       const boxes = [...document.querySelectorAll('[data-progress]')];
       const fill = document.getElementById('progress-fill');
       const count = document.getElementById('progress-count');
-      const saved = JSON.parse(localStorage.getItem(progressKey) || '{}');
-      const savedRecord = JSON.parse(localStorage.getItem(recordKey) || '{}');
+      const saved = JSON.parse(localStorage.getItem(key) || '{}');
 
-      function updateProgress() {
-        const state = Object.fromEntries(boxes.map((box) => [box.dataset.progress, box.checked]));
-        const complete = boxes.filter((box) => box.checked).length;
-        const percent = boxes.length ? Math.round(complete / boxes.length * 100) : 0;
+      function update() {
+        const completed = boxes.filter((box) => box.checked).length;
+        const percent = boxes.length ? Math.round(completed / boxes.length * 100) : 0;
         fill.style.width = `${percent}%`;
-        count.textContent = `${complete} / ${boxes.length} · ${percent}%`;
-        localStorage.setItem(progressKey, JSON.stringify(state));
+        count.textContent = `${completed} / ${boxes.length}`;
+        localStorage.setItem(key, JSON.stringify(Object.fromEntries(boxes.map((box) => [box.dataset.progress, box.checked]))));
       }
 
       boxes.forEach((box) => {
         box.checked = Boolean(saved[box.dataset.progress]);
-        box.addEventListener('change', updateProgress);
-      });
-
-      document.querySelectorAll('[data-record]').forEach((input) => {
-        input.value = savedRecord[input.dataset.record] || '';
-        input.addEventListener('input', () => {
-          const record = Object.fromEntries(
-            [...document.querySelectorAll('[data-record]')].map((item) => [item.dataset.record, item.value])
-          );
-          localStorage.setItem(recordKey, JSON.stringify(record));
-        });
+        box.addEventListener('change', update);
       });
 
       document.querySelectorAll('.copy').forEach((button) => {
         button.addEventListener('click', async () => {
-          const text = button.nextElementSibling.textContent;
           try {
-            await navigator.clipboard.writeText(text);
+            await navigator.clipboard.writeText(button.nextElementSibling.textContent);
             button.textContent = 'コピー済み';
           } catch {
-            const range = document.createRange();
-            range.selectNodeContents(button.nextElementSibling);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-            button.textContent = '選択しました';
+            button.textContent = '選択してコピー';
           }
           setTimeout(() => { button.textContent = 'コピー'; }, 1400);
         });
       });
 
       document.getElementById('reset-progress').addEventListener('click', () => {
-        if (!window.confirm('チェックと終了記録をリセットしますか？')) return;
-        localStorage.removeItem(progressKey);
-        localStorage.removeItem(recordKey);
         boxes.forEach((box) => { box.checked = false; });
-        document.querySelectorAll('[data-record]').forEach((input) => { input.value = ''; });
-        updateProgress();
+        update();
       });
 
-      updateProgress();
+      update();
     })();
   </script>
 </body>

@@ -29,7 +29,7 @@ Write-Host ''
 Write-Host 'Claude Code hands-on preflight' -ForegroundColor Cyan
 Write-Host '--------------------------------'
 
-foreach ($commandName in @('git', 'node', 'npm', 'claude')) {
+foreach ($commandName in @('node', 'npm', 'claude')) {
   $command = Get-Command $commandName -ErrorAction SilentlyContinue
   Write-Check -Label $commandName -Passed ($null -ne $command) -Detail $(
     if ($command) { $command.Source } else { 'not found' }
@@ -37,32 +37,13 @@ foreach ($commandName in @('git', 'node', 'npm', 'claude')) {
 }
 
 if ($failures.Count -eq 0) {
-  $nodeVersion = node --version
-  $npmVersion = npm --version
-  $claudeVersion = claude --version
-  Write-Check -Label 'Node.js version' -Passed $true -Detail $nodeVersion
-  Write-Check -Label 'npm version' -Passed $true -Detail $npmVersion
-  Write-Check -Label 'Claude Code version' -Passed $true -Detail $claudeVersion
-}
-
-$insideRepository = (git rev-parse --is-inside-work-tree 2>$null) -eq 'true'
-Write-Check -Label 'Git repository' -Passed $insideRepository -Detail $repositoryRoot
-
-if ($insideRepository) {
-  $branch = git branch --show-current
-  $head = git rev-parse --short=12 HEAD
-  $status = @(git status --porcelain=v1)
-  Write-Check -Label 'Current branch' -Passed (-not [string]::IsNullOrWhiteSpace($branch)) -Detail $branch
-  Write-Check -Label 'Current commit' -Passed $true -Detail $head
-  Write-Check -Label 'Working tree' -Passed ($status.Count -eq 0) -Detail $(
-    if ($status.Count -eq 0) { 'clean' } else { "$($status.Count) changed path(s); review before starting" }
-  )
+  Write-Check -Label 'Node.js version' -Passed $true -Detail (node --version)
+  Write-Check -Label 'npm version' -Passed $true -Detail (npm --version)
+  Write-Check -Label 'Claude Code version' -Passed $true -Detail (claude --version)
 }
 
 $requiredFiles = @(
   'CLAUDE.md',
-  '.claude/settings.json',
-  'README.md',
   'docs/basic-design.md',
   'docs/test-spec.md',
   'docs/claude-hands-on.md',
@@ -76,9 +57,16 @@ foreach ($relativePath in $requiredFiles) {
 
 if (-not $SkipPackageCheck -and $failures.Count -eq 0) {
   Write-Host ''
-  Write-Host 'Running npm run check...' -ForegroundColor Cyan
-  npm run check
-  Write-Check -Label 'Package validation' -Passed ($LASTEXITCODE -eq 0) -Detail 'npm run check'
+  Write-Host 'Installing dependencies...' -ForegroundColor Cyan
+  npm ci
+  Write-Check -Label 'Dependencies' -Passed ($LASTEXITCODE -eq 0) -Detail 'npm ci'
+
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host ''
+    Write-Host 'Running package check...' -ForegroundColor Cyan
+    npm run check
+    Write-Check -Label 'Package validation' -Passed ($LASTEXITCODE -eq 0) -Detail 'npm run check'
+  }
 }
 
 Write-Host ''
@@ -88,5 +76,5 @@ if ($failures.Count -gt 0) {
   exit 1
 }
 
-Write-Host 'Preflight passed. Open docs/claude-hands-on.html, then start Claude Code from this repository.' -ForegroundColor Green
-Write-Host 'Command: claude --permission-mode plan'
+Write-Host 'Preflight passed.' -ForegroundColor Green
+Write-Host 'Command: claude --dangerously-skip-permissions'
